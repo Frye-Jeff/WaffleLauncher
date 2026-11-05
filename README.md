@@ -5,7 +5,7 @@ A privacy-first Firefox add-on that puts your favorite web apps one click away. 
 - **Toolbar waffle button** that matches light and dark Firefox themes
 - **3×3 grid** of the apps you choose
 - **Drag or use the keyboard to reorder**, right in the popup
-- **Options page** to pick which apps appear
+- **Settings** to pick which apps appear, one right-click away
 - **Light, dark or automatic** look, matching Firefox by default
 - **Background tabs:** Ctrl-click (Cmd-click on Mac) or middle-click to open several apps at once
 - **Smart opening** (optional): reuse the current tab when it's a new or blank tab
@@ -16,9 +16,10 @@ A privacy-first Firefox add-on that puts your favorite web apps one click away. 
 WaffleLauncher collects no data. None.
 
 - **No data collection, analytics or telemetry.** The add-on declares to Firefox that it collects no data.
-- **Two permissions:**
+- **Three permissions:**
   - `storage`, to remember your choices.
   - `activeTab`, used only by the optional **Smart** setting. When you click an app with Smart turned on, WaffleLauncher checks the address of the tab you're on, once, to see whether it's a new or blank tab. That address is never stored or sent anywhere. `activeTab` only covers the tab you're on, and only while you're using the popup; it never gives access to your other tabs or to any page's content.
+  - `menus`, used only to add **WaffleLauncher settings** to the toolbar button's right-click menu. It gives no access to your tabs, pages or data.
 - **The only things stored are your chosen apps (in order), your theme choice, and whether Smart opening is on.** Defaults (Automatic theme, New tab) store nothing. If you use Firefox Sync, these sync between your devices like your other Firefox settings. Nothing about your browsing, clicks or usage is stored.
 - **No network requests.** Every icon and script is bundled with the add-on, and its pages run under a strict content security policy that blocks loading anything from the internet.
 - **No access to page content.** WaffleLauncher can't read or change any page you visit.
@@ -38,7 +39,7 @@ Coming soon to [addons.mozilla.org](https://addons.mozilla.org/). Requires Firef
 - Drag an app onto another to move it there. The new order saves right away.
 - **With the keyboard:** use the arrow keys (and Home/End) to move between apps, and **Ctrl + arrow keys** to move the selected app one spot. On a Mac, **Option + arrow keys** works too.
 
-**Options page.** Open `about:addons`, click WaffleLauncher, then **Preferences**. It opens in its own tab.
+**Settings.** Right-click the waffle button and choose **WaffleLauncher settings**, or open `about:addons`, click WaffleLauncher, then the **Preferences** tab. The settings page also opens once, right after you first install WaffleLauncher.
 
 - Check an app to add it to the end of your grid; uncheck it to remove it. Changes save right away.
 - Your grid holds up to 9 apps. When it's full, uncheck one to make room for another. The last app can't be removed, so the grid is never empty.
@@ -103,6 +104,7 @@ src/
 ├── settings.js      loads and saves your settings (the only code that uses storage)
 ├── theme.js         applies the light, dark or automatic theme to a page
 ├── open.js          rules for how a click opens an app (new, current or background tab)
+├── background.js    the right-click settings item, and opening settings after install
 ├── grid/            tiles, drag and keyboard reordering, shared by the popup and options page
 ├── popup/           the toolbar popup
 ├── options/         the options page
