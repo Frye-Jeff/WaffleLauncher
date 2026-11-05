@@ -1,24 +1,7 @@
-/* ---------------------------------------------------------------------------
-   Popup: a 3-column grid of app tiles.
-   Every color and size is a custom property here, so a dark theme later is
-   one extra block that redefines the colors.
-   --------------------------------------------------------------------------- */
+/* Popup page. Grid and tile styles (and the color/size variables) live in
+   ../grid/grid.css. */
 :root {
-  --wl-bg: #ffffff;
-  --wl-fg: #15141a;
-  --wl-tile-hover-bg: #f0f0f4;
-  --wl-tile-active-bg: #e0e0e6;
-  --wl-focus-ring: #0061e0;
-  --wl-drop-target: #0061e0;
-
-  --wl-columns: 3;
-  --wl-tile-width: 84px;
-  --wl-icon-size: 48px;
-  --wl-gap: 4px;
-  --wl-padding: 8px;
-  --wl-radius: 8px;
-  --wl-font: system-ui, sans-serif;
-  --wl-font-size: 12px;
+  --wl-popup-padding: 8px;
 }
 
 * {
@@ -27,69 +10,8 @@
 
 body {
   margin: 0;
-  padding: var(--wl-padding);
+  padding: var(--wl-popup-padding);
   background: var(--wl-bg);
   color: var(--wl-fg);
-  font: var(--wl-font-size) / 1.3 var(--wl-font);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(var(--wl-columns), var(--wl-tile-width));
-  gap: var(--wl-gap);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.tile {
-  border-radius: var(--wl-radius);
-}
-
-.tile-link {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 4px 8px;
-  border-radius: var(--wl-radius);
-  color: inherit;
-  text-decoration: none;
-}
-
-.tile-link:hover {
-  background: var(--wl-tile-hover-bg);
-}
-
-.tile-link:active {
-  background: var(--wl-tile-active-bg);
-}
-
-.tile-link:focus-visible {
-  outline: 2px solid var(--wl-focus-ring);
-  outline-offset: -2px;
-}
-
-.tile-icon {
-  display: block;
-  width: var(--wl-icon-size);
-  height: var(--wl-icon-size);
-  object-fit: contain;
-}
-
-.tile-label {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Drag and drop */
-.tile.is-dragging {
-  opacity: 0.4;
-}
-
-.tile.is-drop-target {
-  outline: 2px dashed var(--wl-drop-target);
-  outline-offset: -2px;
+  font-family: var(--wl-font);
 }

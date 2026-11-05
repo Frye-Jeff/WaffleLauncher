@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>WaffleLauncher settings</title>
+  <link rel="stylesheet" href="../grid/grid.css">
+  <link rel="stylesheet" href="options.css">
+  <script type="module" src="options.js"></script>
+</head>
+<body>
+  <main class="page">
+    <h1>WaffleLauncher settings</h1>
+
+    <section class="panel" aria-labelledby="grid-heading">
+      <h2 id="grid-heading">Your grid</h2>
+      <p class="hint">Drag apps to change their order. <span id="count"></span></p>
+      <ul id="grid" class="grid" aria-label="Your apps, in grid order"></ul>
+    </section>
+
+    <section class="panel" aria-labelledby="apps-heading">
+      <h2 id="apps-heading">Choose apps</h2>
+      <p class="hint" id="limit-hint"></p>
+      <p class="note" id="full-note" hidden>Your grid is full. Uncheck an app to add a different one.</p>
+      <!-- Filled in by options.js: one group of checkboxes per service -->
+      <div id="services"></div>
+    </section>
+
+    <div class="actions">
+      <button type="button" id="restore">Restore defaults</button>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </div>
+  </main>
+</body>
+</html>

@@ -29,6 +29,11 @@
     "extension_pages": "default-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
   },
 
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+
   "action": {
     "default_title": "WaffleLauncher",
     "default_popup": "popup/popup.html",
