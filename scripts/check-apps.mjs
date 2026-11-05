@@ -37,6 +37,10 @@ const SVG_EXTERNAL = [
 for (const [key, service] of Object.entries(SERVICES)) {
   if (!/^[a-z0-9]+$/.test(key)) errors.push(`service "${key}": key must be lowercase letters/digits only`);
   if (!service?.name) errors.push(`service "${key}": missing name`);
+  for (const [groupKey, groupName] of Object.entries(service?.groups ?? {})) {
+    if (!/^[a-z0-9-]+$/.test(groupKey)) errors.push(`service "${key}": group key "${groupKey}" must be lowercase`);
+    if (typeof groupName !== "string" || !groupName.trim()) errors.push(`service "${key}": group "${groupKey}" needs a name`);
+  }
 }
 
 // --- Apps -------------------------------------------------------------------
@@ -59,8 +63,14 @@ for (const [index, app] of APPS.entries()) {
   if (!ID_FORMAT.test(app.id)) errors.push(`${label}: id must look like "<service>-<app>" (lowercase, dashes)`);
   if (!Object.hasOwn(SERVICES, app.service)) {
     errors.push(`${label}: unknown service "${app.service}" (add it to SERVICES)`);
-  } else if (!app.id.startsWith(`${app.service}-`)) {
-    errors.push(`${label}: id must start with "${app.service}-"`);
+  } else {
+    if (!app.id.startsWith(`${app.service}-`)) errors.push(`${label}: id must start with "${app.service}-"`);
+    const groups = SERVICES[app.service].groups;
+    if (groups && !Object.hasOwn(groups, app.group)) {
+      errors.push(`${label}: group must be one of ${Object.keys(groups).join(", ")} (got "${app.group}")`);
+    } else if (!groups && app.group !== undefined) {
+      errors.push(`${label}: service "${app.service}" has no groups, so remove "group"`);
+    }
   }
 
   if (app.shortName?.length > SHORT_NAME_MAX) {
@@ -130,6 +140,15 @@ for (const id of DEFAULT_APP_IDS) {
   if (!ids.has(id)) errors.push(`DEFAULT_APP_IDS: "${id}" is not an app in APPS`);
   if (seenDefaults.has(id)) errors.push(`DEFAULT_APP_IDS: "${id}" is listed twice`);
   seenDefaults.add(id);
+}
+
+// --- README supported-apps list ---------------------------------------------
+const { buildAppsSection, currentAppsSection } = await import("./readme-apps.mjs");
+const readmeSection = currentAppsSection();
+if (readmeSection === null) {
+  errors.push("README.md: supported-apps markers are missing");
+} else if (readmeSection !== buildAppsSection()) {
+  errors.push("README.md: supported-apps list is out of date; run `npm run readme-apps`");
 }
 
 // --- Placeholder icons ------------------------------------------------------

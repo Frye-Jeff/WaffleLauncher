@@ -41,8 +41,15 @@ h2 {
 }
 
 h3 {
-  margin: 16px 0 8px;
-  font-size: 14px;
+  margin: 16px 0 4px;
+  font-size: 15px;
+}
+
+/* Group subheadings under a service ("Everyday", "Business and developer") */
+h4 {
+  margin: 12px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--wl-muted);
 }
 

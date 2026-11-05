@@ -11,6 +11,7 @@
   },
   "scripts": {
     "check": "node scripts/check-apps.mjs",
+    "readme-apps": "node scripts/readme-apps.mjs",
     "test": "node --test \"tests/**/*.test.js\"",
     "start": "web-ext run --source-dir src",
     "lint": "web-ext lint --source-dir src",

@@ -3,7 +3,8 @@
 // order (drag in the grid preview), how apps open, and the theme. Every change
 // saves immediately.
 // -----------------------------------------------------------------------------
-import { APPS, GRID_SIZE, SERVICES } from "../apps.js";
+import { APPS, GRID_SIZE } from "../apps.js";
+import { catalog } from "../catalog.js";
 import {
   loadAppIds,
   loadOpenMode,
@@ -45,43 +46,51 @@ let appIds = [];
 let statusTimer;
 
 // --- Drawing ----------------------------------------------------------------
-function buildPicker() {
-  for (const [serviceKey, service] of Object.entries(SERVICES)) {
-    const apps = APPS.filter((app) => app.service === serviceKey);
-    if (!apps.length) continue;
+function buildPickerItem(app) {
+  const item = document.createElement("li");
 
+  const label = document.createElement("label");
+  label.className = "picker-item";
+
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.value = app.id;
+  input.addEventListener("change", () => toggleApp(app.id, input.checked));
+  checkboxes.set(app.id, input);
+
+  const icon = document.createElement("img");
+  icon.className = "picker-icon";
+  icon.src = browser.runtime.getURL(app.icon);
+  icon.alt = "";
+
+  const name = document.createElement("span");
+  name.textContent = app.name;
+
+  label.append(input, icon, name);
+  item.append(label);
+  return item;
+}
+
+// One heading per service, then one alphabetized list per group.
+function buildPicker() {
+  for (const service of catalog()) {
     const heading = document.createElement("h3");
     heading.textContent = service.name;
+    services.append(heading);
 
-    const list = document.createElement("ul");
-    list.className = "picker";
-    list.setAttribute("aria-label", `${service.name} apps`);
-
-    for (const app of apps) {
-      const item = document.createElement("li");
-
-      const label = document.createElement("label");
-      label.className = "picker-item";
-
-      const input = document.createElement("input");
-      input.type = "checkbox";
-      input.value = app.id;
-      input.addEventListener("change", () => toggleApp(app.id, input.checked));
-      checkboxes.set(app.id, input);
-
-      const icon = document.createElement("img");
-      icon.className = "picker-icon";
-      icon.src = browser.runtime.getURL(app.icon);
-      icon.alt = "";
-
-      const name = document.createElement("span");
-      name.textContent = app.name;
-
-      label.append(input, icon, name);
-      item.append(label);
-      list.append(item);
+    for (const section of service.sections) {
+      if (section.name) {
+        const subheading = document.createElement("h4");
+        subheading.textContent = section.name;
+        services.append(subheading);
+      }
+      const list = document.createElement("ul");
+      list.className = "picker";
+      list.setAttribute("aria-label",
+        section.name ? `${service.name}: ${section.name}` : `${service.name} apps`);
+      list.append(...section.apps.map(buildPickerItem));
+      services.append(list);
     }
-    services.append(heading, list);
   }
 }
 
