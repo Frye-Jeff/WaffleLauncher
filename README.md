@@ -13,6 +13,13 @@ A privacy-first Firefox add-on that puts your favorite web apps (Google, Proton 
 - **Smart opening** (optional): reuse the current tab when it's a new or blank tab
 - **Syncs** your choices between devices through Firefox Sync, if you use it
 
+<p align="center">
+  <img src="store/screenshot-popup-dark.png" alt="The WaffleLauncher popup in the dark look, showing a 3×3 grid of Google apps" width="300">
+  <img src="store/screenshot-popup-light.png" alt="The WaffleLauncher popup in the light look, showing the same grid" width="300">
+  <br>
+  <em>The popup in the dark and light looks</em>
+</p>
+
 ## Background
 
 WaffleLauncher started with someone else's good idea. I was a longtime user of [Google App Launcher](https://github.com/asolkar/ffx-addon-gglappbtn) by Mahesh Asolkar, a simple toolbar button that put my Google apps one click away. It did exactly what I needed, and I'm grateful he built it and shared it with everyone.
