@@ -40,7 +40,7 @@ Coming soon to [addons.mozilla.org](https://addons.mozilla.org/). Requires Firef
 
 ## Supported apps
 
-Google: Gmail, Google Calendar, Google Sheets, Google Drive, Google Gemini, Google Docs, Google Photos, Google Maps, Google Keep, Google Slides, Google Meet, Google Contacts, Google Classroom, Gemini Notebook, Google Translate, Google News, Google Messages, Google Voice, Google Groups, Google Play, YouTube, YouTube Music, Google Search.
+Google: Gmail, Google Calendar, Google Sheets, Google Drive, Google Gemini, Google Docs, Google Photos, Google Maps, Google Keep, Google Slides, Google Meet, Google Contacts, Google Classroom, Gemini Notebook, Google Translate, Google News, Google Messages, Google Voice, Google Groups, Google Play, YouTube, YouTube Music, Google Search, Google Chat, Google Forms, Google Sites, Google Tasks, Google Vids, Google Admin console, Google Account, Google Earth, Google Wallet, Google One, Google Home, Find Hub, Google Finance, Google Flights, Google Shopping, Google Scholar, Google Arts & Culture, Google Play Books, Blogger, YouTube Kids, YouTube TV, Google Fonts, Google Trends, Google Ads, Google Analytics, Google Search Console, Google Cloud console, Google Business Profile, Google AI Studio, Google Labs.
 
 The default grid is Gmail, Calendar, Sheets, Drive, Gemini, Docs, Photos, Maps and Keep.
 

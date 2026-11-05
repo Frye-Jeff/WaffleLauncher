@@ -52,6 +52,42 @@ export const APPS = Object.freeze([
   { id: "google-youtube",       service: "google", shortName: "YouTube",    name: "YouTube",          url: "https://www.youtube.com/",       icon: PLACEHOLDER },
   { id: "google-youtube-music", service: "google", shortName: "YT Music",   name: "YouTube Music",    url: "https://music.youtube.com/",     icon: PLACEHOLDER },
   { id: "google-search",        service: "google", shortName: "Search",     name: "Google Search",    url: "https://www.google.com/",        icon: PLACEHOLDER },
+
+  // Google Workspace
+  { id: "google-chat",          service: "google", shortName: "Chat",       name: "Google Chat",          url: "https://chat.google.com/",          icon: PLACEHOLDER },
+  { id: "google-forms",         service: "google", shortName: "Forms",      name: "Google Forms",         url: "https://docs.google.com/forms/",    icon: PLACEHOLDER },
+  { id: "google-sites",         service: "google", shortName: "Sites",      name: "Google Sites",         url: "https://sites.google.com/",         icon: PLACEHOLDER },
+  { id: "google-tasks",         service: "google", shortName: "Tasks",      name: "Google Tasks",         url: "https://tasks.google.com/",         icon: PLACEHOLDER },
+  { id: "google-vids",          service: "google", shortName: "Vids",       name: "Google Vids",          url: "https://vids.google.com/",          icon: PLACEHOLDER },
+  { id: "google-admin",         service: "google", shortName: "Admin",      name: "Google Admin console", url: "https://admin.google.com/",         icon: PLACEHOLDER },
+
+  // Everyday
+  { id: "google-account",       service: "google", shortName: "Account",    name: "Google Account",       url: "https://myaccount.google.com/",     icon: PLACEHOLDER },
+  { id: "google-earth",         service: "google", shortName: "Earth",      name: "Google Earth",         url: "https://earth.google.com/web/",     icon: PLACEHOLDER },
+  { id: "google-wallet",        service: "google", shortName: "Wallet",     name: "Google Wallet",        url: "https://wallet.google.com/",        icon: PLACEHOLDER },
+  { id: "google-one",           service: "google", shortName: "Google One", name: "Google One",           url: "https://one.google.com/",           icon: PLACEHOLDER },
+  { id: "google-home",          service: "google", shortName: "Home",       name: "Google Home",          url: "https://home.google.com/",          icon: PLACEHOLDER },
+  { id: "google-find-hub",      service: "google", shortName: "Find Hub",   name: "Find Hub",             url: "https://www.google.com/android/find", icon: PLACEHOLDER },
+  { id: "google-finance",       service: "google", shortName: "Finance",    name: "Google Finance",       url: "https://www.google.com/finance",    icon: PLACEHOLDER },
+  { id: "google-flights",       service: "google", shortName: "Flights",    name: "Google Flights",       url: "https://www.google.com/travel/flights", icon: PLACEHOLDER },
+  { id: "google-shopping",      service: "google", shortName: "Shopping",   name: "Google Shopping",      url: "https://shopping.google.com/",      icon: PLACEHOLDER },
+  { id: "google-scholar",       service: "google", shortName: "Scholar",    name: "Google Scholar",       url: "https://scholar.google.com/",       icon: PLACEHOLDER },
+  { id: "google-arts-culture",  service: "google", shortName: "Arts",       name: "Google Arts & Culture", url: "https://artsandculture.google.com/", icon: PLACEHOLDER },
+  { id: "google-play-books",    service: "google", shortName: "Play Books", name: "Google Play Books",    url: "https://play.google.com/store/books", icon: PLACEHOLDER },
+  { id: "google-blogger",       service: "google", shortName: "Blogger",    name: "Blogger",              url: "https://www.blogger.com/",          icon: PLACEHOLDER },
+  { id: "google-youtube-kids",  service: "google", shortName: "YT Kids",    name: "YouTube Kids",         url: "https://www.youtubekids.com/",      icon: PLACEHOLDER },
+  { id: "google-youtube-tv",    service: "google", shortName: "YouTube TV", name: "YouTube TV",           url: "https://tv.youtube.com/",           icon: PLACEHOLDER },
+  { id: "google-fonts",         service: "google", shortName: "Fonts",      name: "Google Fonts",         url: "https://fonts.google.com/",         icon: PLACEHOLDER },
+  { id: "google-trends",        service: "google", shortName: "Trends",     name: "Google Trends",        url: "https://trends.google.com/",        icon: PLACEHOLDER },
+
+  // Business and developer
+  { id: "google-ads",           service: "google", shortName: "Ads",        name: "Google Ads",           url: "https://ads.google.com/",           icon: PLACEHOLDER },
+  { id: "google-analytics",     service: "google", shortName: "Analytics",  name: "Google Analytics",     url: "https://analytics.google.com/",     icon: PLACEHOLDER },
+  { id: "google-search-console", service: "google", shortName: "Console",   name: "Google Search Console", url: "https://search.google.com/search-console", icon: PLACEHOLDER },
+  { id: "google-cloud-console", service: "google", shortName: "Cloud",      name: "Google Cloud console", url: "https://console.cloud.google.com/", icon: PLACEHOLDER },
+  { id: "google-business-profile", service: "google", shortName: "Business", name: "Google Business Profile", url: "https://business.google.com/", icon: PLACEHOLDER },
+  { id: "google-ai-studio",     service: "google", shortName: "AI Studio",  name: "Google AI Studio",     url: "https://aistudio.google.com/",      icon: PLACEHOLDER },
+  { id: "google-labs",          service: "google", shortName: "Labs",       name: "Google Labs",          url: "https://labs.google/",              icon: PLACEHOLDER },
 ].map((app) => Object.freeze(app)));
 
 // The grid a new user starts with, in order. Listed explicitly so that adding
