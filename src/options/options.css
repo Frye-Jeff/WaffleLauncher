@@ -1,15 +1,15 @@
 /* Options page. Grid and tile styles (and the shared color/size variables)
    live in ../grid/grid.css; page-only variables are here. */
 :root {
-  --wl-page-bg: #f9f9fb;
-  --wl-panel-bg: #ffffff;
-  --wl-border: #e0e0e6;
-  --wl-muted: #5b5b66;
-  --wl-note-bg: #fff4de;
-  --wl-error: #c50042;
-  --wl-success: #017a40;
-  --wl-button-bg: #f0f0f4;
-  --wl-button-hover-bg: #e0e0e6;
+  --wl-page-bg: light-dark(#f9f9fb, #1c1b22);
+  --wl-panel-bg: light-dark(#ffffff, #2b2a33);
+  --wl-border: light-dark(#e0e0e6, #52525e);
+  --wl-muted: light-dark(#5b5b66, #bfbfc9);
+  --wl-note-bg: light-dark(#fff4de, #4a3a10);
+  --wl-error: light-dark(#c50042, #ff848b);
+  --wl-success: light-dark(#017a40, #54ffbd);
+  --wl-button-bg: light-dark(#f0f0f4, #3a3944);
+  --wl-button-hover-bg: light-dark(#e0e0e6, #52525e);
   --wl-picker-icon-size: 24px;
 }
 
@@ -110,6 +110,29 @@ h3 {
   width: var(--wl-picker-icon-size);
   height: var(--wl-picker-icon-size);
   object-fit: contain;
+}
+
+/* Appearance */
+.theme-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+
+.theme-choice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.theme-choice input {
+  margin: 0;
+}
+
+.theme-choice input:focus-visible {
+  outline: 2px solid var(--wl-focus-ring);
+  outline-offset: 2px;
 }
 
 /* Actions and status */

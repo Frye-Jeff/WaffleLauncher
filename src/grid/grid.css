@@ -1,15 +1,28 @@
 /* ---------------------------------------------------------------------------
    App grid: shared by the popup and the options page preview.
-   Every color and size is a custom property here, so a dark theme later is
-   one extra block that redefines the colors.
+   Every color and size is a custom property here. Colors are
+   light-dark(light, dark) pairs: `color-scheme` picks one, so the theme
+   setting only has to change `color-scheme` (see ../theme.js).
    --------------------------------------------------------------------------- */
 :root {
-  --wl-bg: #ffffff;
-  --wl-fg: #15141a;
-  --wl-tile-hover-bg: #f0f0f4;
-  --wl-tile-active-bg: #e0e0e6;
-  --wl-focus-ring: #0061e0;
-  --wl-drop-target: #0061e0;
+  color-scheme: light dark;            /* "Automatic": follow Firefox */
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root {
+  --wl-bg: light-dark(#ffffff, #2b2a33);
+  --wl-fg: light-dark(#15141a, #fbfbfe);
+  --wl-tile-hover-bg: light-dark(#f0f0f4, #3a3944);
+  --wl-tile-active-bg: light-dark(#e0e0e6, #52525e);
+  --wl-focus-ring: light-dark(#0061e0, #00ddff);
+  --wl-drop-target: light-dark(#0061e0, #00ddff);
 
   --wl-columns: 3;
   --wl-tile-width: 84px;

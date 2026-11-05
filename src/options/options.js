@@ -1,16 +1,21 @@
 // -----------------------------------------------------------------------------
-// Options page: choose which apps appear (checkboxes grouped by service) and
-// their order (drag in the grid preview). Every change saves immediately.
+// Options page: choose which apps appear (checkboxes grouped by service), their
+// order (drag in the grid preview), and the theme. Every change saves
+// immediately.
 // -----------------------------------------------------------------------------
 import { APPS, GRID_SIZE, SERVICES } from "../apps.js";
 import {
   loadAppIds,
+  loadTheme,
   moveItem,
   onAppIdsChanged,
-  resetAppIds,
+  onThemeChanged,
+  resetSettings,
   saveAppIds,
+  saveTheme,
 } from "../settings.js";
 import { createTile, enableDragReorder } from "../grid/grid.js";
+import { applyTheme } from "../theme.js";
 
 const APP_BY_ID = new Map(APPS.map((app) => [app.id, app]));
 const STATUS_MS = 2000;
@@ -22,9 +27,11 @@ const fullNote = document.getElementById("full-note");
 const services = document.getElementById("services");
 const restore = document.getElementById("restore");
 const status = document.getElementById("status");
+const themeInputs = [...document.querySelectorAll('input[name="theme"]')];
 
 const checkboxes = new Map(); // app id -> <input type="checkbox">
 let appIds = [];
+let theme = "auto";
 let statusTimer;
 
 // --- Drawing ----------------------------------------------------------------
@@ -87,6 +94,12 @@ function render(ids) {
   }
 }
 
+function renderTheme(next) {
+  theme = next;
+  applyTheme(theme);
+  for (const input of themeInputs) input.checked = input.value === theme;
+}
+
 function showStatus(message, isError = false) {
   clearTimeout(statusTimer);
   status.textContent = message;
@@ -112,9 +125,24 @@ function toggleApp(id, checked) {
   commit(next);
 }
 
+async function chooseTheme(next) {
+  const previous = theme;
+  renderTheme(next);
+  try {
+    renderTheme(await saveTheme(next));
+    showStatus("Saved");
+  } catch {
+    renderTheme(previous); // not saved: show what's actually stored
+    showStatus("Couldn't save. Please try again.", true);
+  }
+}
+
+// Resets everything: the default apps and the Automatic theme.
 async function restoreDefaults() {
   try {
-    render(await resetAppIds());
+    const defaults = await resetSettings();
+    render(defaults.apps);
+    renderTheme(defaults.theme);
     showStatus("Saved");
   } catch {
     showStatus("Couldn't save. Please try again.", true);
@@ -126,5 +154,11 @@ limitHint.textContent = `Pick up to ${GRID_SIZE} apps. New apps are added to the
 buildPicker();
 enableDragReorder(grid, (from, to) => commit(moveItem(appIds, from, to)));
 restore.addEventListener("click", restoreDefaults);
-render(await loadAppIds());
+for (const input of themeInputs) {
+  input.addEventListener("change", () => { if (input.checked) chooseTheme(input.value); });
+}
+const [ids, savedTheme] = await Promise.all([loadAppIds(), loadTheme()]);
+renderTheme(savedTheme);
+render(ids);
 onAppIdsChanged(render);
+onThemeChanged(renderTheme);

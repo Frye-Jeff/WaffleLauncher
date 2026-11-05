@@ -4,13 +4,18 @@ import assert from "node:assert/strict";
 import { installFakeBrowser } from "./fake-browser.js";
 import { APPS, DEFAULT_APP_IDS, GRID_SIZE } from "../src/apps.js";
 import {
+  DEFAULT_THEME,
   SETTINGS_VERSION,
+  THEMES,
   cleanAppIds,
   loadAppIds,
+  loadTheme,
   moveItem,
   onAppIdsChanged,
-  resetAppIds,
+  onThemeChanged,
+  resetSettings,
   saveAppIds,
+  saveTheme,
 } from "../src/settings.js";
 
 const KEY = "settings";
@@ -95,29 +100,108 @@ describe("saveAppIds", () => {
     assert.deepEqual(await loadAppIds(), ["google-youtube", "google-gmail"]);
   });
 
-  test("saving an empty or all-invalid list resets to the defaults", async () => {
-    fake.data.set(KEY, { version: 1, apps: ["google-gmail"] });
+  test("keeps the saved theme", async () => {
+    fake.data.set(KEY, { version: 1, theme: "light" });
+    await saveAppIds(["google-drive"]);
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION, theme: "light", apps: ["google-drive"] });
+  });
+
+  test("saving an empty or all-invalid list restores the default apps but keeps the theme", async () => {
+    fake.data.set(KEY, { version: 1, apps: ["google-gmail"], theme: "dark" });
     assert.deepEqual(await saveAppIds(["bogus"]), [...DEFAULT_APP_IDS]);
-    assert.equal(fake.data.has(KEY), false);
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION, theme: "dark" });
+    assert.deepEqual(await loadAppIds(), [...DEFAULT_APP_IDS]);
   });
 
   test("rejects when storage fails, so the caller can report it", async () => {
     fake.failNext = "set";
     await assert.rejects(saveAppIds(["google-gmail"]));
   });
+
+  test("rejects without writing when the current settings can't be read", async () => {
+    fake.data.set(KEY, { version: 1, theme: "dark" });
+    fake.failNext = "get";
+    await assert.rejects(saveAppIds(["google-gmail"]));
+    assert.deepEqual(fake.data.get(KEY), { version: 1, theme: "dark" });
+  });
 });
 
-describe("resetAppIds", () => {
-  test("removes the saved setting and returns the defaults", async () => {
-    fake.data.set(KEY, { version: 1, apps: ["google-gmail"] });
-    assert.deepEqual(await resetAppIds(), [...DEFAULT_APP_IDS]);
+describe("loadTheme", () => {
+  test("returns auto when nothing is saved", async () => {
+    assert.equal(DEFAULT_THEME, "auto");
+    assert.equal(await loadTheme(), "auto");
+  });
+
+  test("returns the saved theme", async () => {
+    for (const theme of ["light", "dark"]) {
+      fake.data.set(KEY, { version: 1, theme });
+      assert.equal(await loadTheme(), theme);
+    }
+  });
+
+  test("returns auto for an unknown or malformed theme", async () => {
+    for (const value of [{ theme: "purple" }, { theme: 1 }, "dark", null]) {
+      fake.data.set(KEY, value);
+      assert.equal(await loadTheme(), "auto");
+    }
+  });
+
+  test("returns auto instead of throwing when storage fails", async () => {
+    fake.failNext = "get";
+    assert.equal(await loadTheme(), "auto");
+  });
+});
+
+describe("saveTheme", () => {
+  test("saves light and dark, keeping the apps", async () => {
+    fake.data.set(KEY, { version: 1, apps: ["google-drive"] });
+    assert.equal(await saveTheme("dark"), "dark");
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION, apps: ["google-drive"], theme: "dark" });
+    await saveTheme("light");
+    assert.equal(await loadTheme(), "light");
+    assert.deepEqual(await loadAppIds(), ["google-drive"]);
+  });
+
+  test("auto is stored by leaving the field out", async () => {
+    fake.data.set(KEY, { version: 1, apps: ["google-drive"], theme: "dark" });
+    await saveTheme("auto");
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION, apps: ["google-drive"] });
+  });
+
+  test("stores nothing but the version, app list and theme", async () => {
+    await saveTheme("dark");
+    await saveAppIds(["google-gmail"]);
+    assert.deepEqual([...fake.data.keys()], [KEY]);
+    assert.deepEqual(Object.keys(fake.data.get(KEY)).sort(), ["apps", "theme", "version"]);
+  });
+
+  test("accepts every theme in THEMES", async () => {
+    for (const theme of THEMES) assert.equal(await saveTheme(theme), theme);
+  });
+
+  test("rejects an unknown theme without writing", async () => {
+    await assert.rejects(saveTheme("purple"));
+    assert.equal(fake.data.has(KEY), false);
+  });
+
+  test("rejects when storage fails", async () => {
+    fake.failNext = "set";
+    await assert.rejects(saveTheme("dark"));
+  });
+});
+
+describe("resetSettings", () => {
+  test("removes all saved settings and returns the default apps and theme", async () => {
+    fake.data.set(KEY, { version: 1, apps: ["google-gmail"], theme: "dark" });
+    assert.deepEqual(await resetSettings(), { apps: [...DEFAULT_APP_IDS], theme: "auto" });
     assert.equal(fake.data.has(KEY), false);
     assert.deepEqual(await loadAppIds(), [...DEFAULT_APP_IDS]);
+    assert.equal(await loadTheme(), "auto");
   });
 
   test("rejects when storage fails", async () => {
     fake.failNext = "remove";
-    await assert.rejects(resetAppIds());
+    await assert.rejects(resetSettings());
   });
 });
 
@@ -126,7 +210,14 @@ describe("sync safety", () => {
     const newer = { version: SETTINGS_VERSION + 1, apps: ["proton-mail", "google-gmail"], extra: true };
     fake.data.set(KEY, structuredClone(newer));
     assert.deepEqual(await loadAppIds(), ["google-gmail"]);
+    await loadTheme();
     assert.deepEqual(fake.data.get(KEY), newer);
+  });
+
+  test("saving keeps fields from a newer version that this one doesn't know", async () => {
+    fake.data.set(KEY, { version: SETTINGS_VERSION + 1, apps: ["google-gmail"], extra: true });
+    await saveTheme("dark");
+    assert.equal(fake.data.get(KEY).extra, true);
   });
 });
 
@@ -135,7 +226,7 @@ describe("onAppIdsChanged", () => {
     const seen = [];
     onAppIdsChanged((ids) => seen.push(ids));
     await saveAppIds(["google-drive", "bogus"]);
-    await resetAppIds();
+    await resetSettings();
     assert.deepEqual(seen, [["google-drive"], [...DEFAULT_APP_IDS]]);
   });
 
@@ -153,6 +244,25 @@ describe("onAppIdsChanged", () => {
     stop();
     assert.equal(fake.storage.onChanged.count, 0);
     await saveAppIds(["google-drive"]);
+    assert.deepEqual(seen, []);
+  });
+});
+
+describe("onThemeChanged", () => {
+  test("reports the theme when the setting changes", async () => {
+    const seen = [];
+    onThemeChanged((theme) => seen.push(theme));
+    await saveTheme("dark");
+    await saveAppIds(["google-drive"]);
+    await resetSettings();
+    assert.deepEqual(seen, ["dark", "dark", "auto"]);
+  });
+
+  test("returns a function that stops listening", async () => {
+    const seen = [];
+    const stop = onThemeChanged((theme) => seen.push(theme));
+    stop();
+    await saveTheme("dark");
     assert.deepEqual(seen, []);
   });
 });

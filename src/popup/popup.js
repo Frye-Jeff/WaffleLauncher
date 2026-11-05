@@ -3,8 +3,16 @@
 // new tab; drag a tile onto another to reorder.
 // -----------------------------------------------------------------------------
 import { APPS } from "../apps.js";
-import { loadAppIds, moveItem, onAppIdsChanged, saveAppIds } from "../settings.js";
+import {
+  loadAppIds,
+  loadTheme,
+  moveItem,
+  onAppIdsChanged,
+  onThemeChanged,
+  saveAppIds,
+} from "../settings.js";
 import { createTile, enableDragReorder } from "../grid/grid.js";
+import { applyTheme } from "../theme.js";
 
 const APP_BY_ID = new Map(APPS.map((app) => [app.id, app]));
 
@@ -36,5 +44,8 @@ async function reorder(from, to) {
 }
 
 enableDragReorder(grid, reorder);
-render(await loadAppIds());
+const [ids, theme] = await Promise.all([loadAppIds(), loadTheme()]);
+applyTheme(theme); // before drawing, so the grid appears in the right theme
+render(ids);
 onAppIdsChanged(render);
+onThemeChanged(applyTheme);

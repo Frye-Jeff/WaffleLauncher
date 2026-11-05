@@ -6,6 +6,7 @@ A privacy-first Firefox add-on that puts your favorite web apps one click away. 
 - **3×3 grid** of the apps you choose
 - **Drag to reorder**, right in the popup
 - **Options page** to pick which apps appear
+- **Light, dark or automatic** look, matching Firefox by default
 - **Syncs** your choices between devices through Firefox Sync, if you use it
 
 ## Privacy
@@ -13,8 +14,8 @@ A privacy-first Firefox add-on that puts your favorite web apps one click away. 
 WaffleLauncher collects no data. None.
 
 - **No data collection, analytics or telemetry.** The add-on declares to Firefox that it collects no data.
-- **One permission: `storage`.** It's used only to remember which apps you chose.
-- **The only thing stored is your list of chosen apps**, in order. If you use Firefox Sync, that list syncs between your devices like your other Firefox settings. Nothing about your browsing, clicks or usage is stored.
+- **One permission: `storage`.** It's used only to remember your choices.
+- **The only things stored are your chosen apps, in order, and your theme choice** (Light or Dark; Automatic stores nothing). If you use Firefox Sync, they sync between your devices like your other Firefox settings. Nothing about your browsing, clicks or usage is stored.
 - **No network requests.** Every icon and script is bundled with the add-on, and its pages run under a strict content security policy that blocks loading anything from the internet.
 - **No access to websites.** That's why Firefox's Extensions menu shows *"Can't read and change data on this site"* for WaffleLauncher. It can't see or change any page you visit.
 - **Plain links.** Apps open at their normal addresses, with no tracking or referral codes added.
@@ -36,7 +37,8 @@ Coming soon to [addons.mozilla.org](https://addons.mozilla.org/). Requires Firef
 - Check an app to add it to the end of your grid; uncheck it to remove it. Changes save right away.
 - Your grid holds up to 9 apps. When it's full, uncheck one to make room for another. The last app can't be removed, so the grid is never empty.
 - Drag apps in the **Your grid** preview to reorder them.
-- **Restore defaults** brings back the original 9 apps.
+- Under **Appearance**, choose **Automatic** (match Firefox), **Light** or **Dark**. The popup and options page switch right away.
+- **Restore defaults** brings back the original 9 apps and the Automatic theme.
 
 ## Supported apps
 
@@ -85,7 +87,8 @@ Only the `src/` folder ships in the add-on:
 src/
 ├── manifest.json
 ├── apps.js          app list: every app, plus the defaults
-├── settings.js      loads and saves your app list (the only code that uses storage)
+├── settings.js      loads and saves your apps and theme (the only code that uses storage)
+├── theme.js         applies the light, dark or automatic theme to a page
 ├── grid/            tiles and drag-to-reorder, shared by the popup and options page
 ├── popup/           the toolbar popup
 ├── options/         the options page
