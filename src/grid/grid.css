@@ -92,6 +92,19 @@ div.tile-link {
   white-space: nowrap;
 }
 
+/* Screen-reader-only text (keyboard move announcements) */
+.wl-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Drag and drop */
 .tile.is-dragging {
   opacity: 0.4;

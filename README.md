@@ -4,7 +4,7 @@ A privacy-first Firefox add-on that puts your favorite web apps one click away. 
 
 - **Toolbar waffle button** that matches light and dark Firefox themes
 - **3×3 grid** of the apps you choose
-- **Drag to reorder**, right in the popup
+- **Drag or use the keyboard to reorder**, right in the popup
 - **Options page** to pick which apps appear
 - **Light, dark or automatic** look, matching Firefox by default
 - **Syncs** your choices between devices through Firefox Sync, if you use it
@@ -31,12 +31,13 @@ Coming soon to [addons.mozilla.org](https://addons.mozilla.org/). Requires Firef
 - Click an app to open it in a new tab. You can also press Tab to move between apps and Enter to open one.
 - Hover over an app to see its full name.
 - Drag an app onto another to move it there. The new order saves right away.
+- **With the keyboard:** use the arrow keys (and Home/End) to move between apps, and **Ctrl + arrow keys** to move the selected app one spot. On a Mac, **Option + arrow keys** works too.
 
 **Options page.** Open `about:addons`, click WaffleLauncher, then **Preferences**. It opens in its own tab.
 
 - Check an app to add it to the end of your grid; uncheck it to remove it. Changes save right away.
 - Your grid holds up to 9 apps. When it's full, uncheck one to make room for another. The last app can't be removed, so the grid is never empty.
-- Drag apps in the **Your grid** preview to reorder them.
+- Drag apps in the **Your grid** preview to reorder them, or use the same keyboard shortcuts as in the popup.
 - Under **Appearance**, choose **Automatic** (match Firefox), **Light** or **Dark**. The popup and options page switch right away.
 - **Restore defaults** brings back the original 9 apps and the Automatic theme.
 
@@ -89,7 +90,7 @@ src/
 ├── apps.js          app list: every app, plus the defaults
 ├── settings.js      loads and saves your apps and theme (the only code that uses storage)
 ├── theme.js         applies the light, dark or automatic theme to a page
-├── grid/            tiles and drag-to-reorder, shared by the popup and options page
+├── grid/            tiles, drag and keyboard reordering, shared by the popup and options page
 ├── popup/           the toolbar popup
 ├── options/         the options page
 └── icons/           toolbar icons, and one folder of app icons per service

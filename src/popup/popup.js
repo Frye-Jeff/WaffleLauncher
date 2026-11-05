@@ -11,7 +11,7 @@ import {
   onThemeChanged,
   saveAppIds,
 } from "../settings.js";
-import { createTile, enableDragReorder } from "../grid/grid.js";
+import { createTile, enableDragReorder, enableKeyboardReorder, syncGrid } from "../grid/grid.js";
 import { applyTheme } from "../theme.js";
 
 const APP_BY_ID = new Map(APPS.map((app) => [app.id, app]));
@@ -28,8 +28,10 @@ function openApp(app) {
 function render(ids) {
   appIds = ids.filter((id) => APP_BY_ID.has(id));
   grid.replaceChildren(
-    ...appIds.map((id, index) => createTile(APP_BY_ID.get(id), index, { onOpen: openApp }))
+    ...appIds.map((id, index) =>
+      createTile(APP_BY_ID.get(id), index, { onOpen: openApp, count: appIds.length }))
   );
+  syncGrid(grid);
 }
 
 async function reorder(from, to) {
@@ -44,6 +46,7 @@ async function reorder(from, to) {
 }
 
 enableDragReorder(grid, reorder);
+enableKeyboardReorder(grid, reorder);
 const [ids, theme] = await Promise.all([loadAppIds(), loadTheme()]);
 applyTheme(theme); // before drawing, so the grid appears in the right theme
 render(ids);

@@ -14,7 +14,13 @@ import {
   saveAppIds,
   saveTheme,
 } from "../settings.js";
-import { createTile, enableDragReorder } from "../grid/grid.js";
+import {
+  MOVE_KEY_LABEL,
+  createTile,
+  enableDragReorder,
+  enableKeyboardReorder,
+  syncGrid,
+} from "../grid/grid.js";
 import { applyTheme } from "../theme.js";
 
 const APP_BY_ID = new Map(APPS.map((app) => [app.id, app]));
@@ -23,6 +29,7 @@ const STATUS_MS = 2000;
 const grid = document.getElementById("grid");
 const count = document.getElementById("count");
 const limitHint = document.getElementById("limit-hint");
+const orderHint = document.getElementById("order-hint");
 const fullNote = document.getElementById("full-note");
 const services = document.getElementById("services");
 const restore = document.getElementById("restore");
@@ -78,7 +85,10 @@ function buildPicker() {
 function render(ids) {
   appIds = ids.filter((id) => APP_BY_ID.has(id));
 
-  grid.replaceChildren(...appIds.map((id, index) => createTile(APP_BY_ID.get(id), index)));
+  grid.replaceChildren(
+    ...appIds.map((id, index) => createTile(APP_BY_ID.get(id), index, { count: appIds.length }))
+  );
+  syncGrid(grid);
   count.textContent = `${appIds.length} of ${GRID_SIZE} apps.`;
 
   const full = appIds.length >= GRID_SIZE;
@@ -152,7 +162,11 @@ async function restoreDefaults() {
 // --- Start ------------------------------------------------------------------
 limitHint.textContent = `Pick up to ${GRID_SIZE} apps. New apps are added to the end of your grid.`;
 buildPicker();
-enableDragReorder(grid, (from, to) => commit(moveItem(appIds, from, to)));
+const reorder = (from, to) => commit(moveItem(appIds, from, to));
+enableDragReorder(grid, reorder);
+enableKeyboardReorder(grid, reorder);
+orderHint.textContent =
+  `Drag apps to change their order. With the keyboard, use the arrow keys to pick an app and ${MOVE_KEY_LABEL} + arrow keys to move it.`;
 restore.addEventListener("click", restoreDefaults);
 for (const input of themeInputs) {
   input.addEventListener("change", () => { if (input.checked) chooseTheme(input.value); });
