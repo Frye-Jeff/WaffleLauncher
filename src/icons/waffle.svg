@@ -1,14 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
-  <!-- Add-on icon (about:addons): blue squares, readable on light and dark backgrounds -->
-  <g fill="#0060df">
-    <rect x="3" y="3" width="12" height="12" rx="3"/>
-    <rect x="18" y="3" width="12" height="12" rx="3"/>
-    <rect x="33" y="3" width="12" height="12" rx="3"/>
-    <rect x="3" y="18" width="12" height="12" rx="3"/>
-    <rect x="18" y="18" width="12" height="12" rx="3"/>
-    <rect x="33" y="18" width="12" height="12" rx="3"/>
-    <rect x="3" y="33" width="12" height="12" rx="3"/>
-    <rect x="18" y="33" width="12" height="12" rx="3"/>
-    <rect x="33" y="33" width="12" height="12" rx="3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- WaffleLauncher logo: a cartoon waffle with a pat of butter. Bold outline, flat colors,
+       a slight tilt for a bit of whimsy. The 3x3 pockets are the launcher grid. -->
+  <g transform="rotate(-6 64 64)">
+    <!-- waffle body -->
+    <rect x="12" y="14" width="104" height="102" rx="26" fill="#f2b03f" stroke="#5a3010" stroke-width="5"/>
+    <path d="M22 44 V36 Q22 24 34 24 H52" fill="none" stroke="#ffd98a" stroke-width="5" stroke-linecap="round"/>
+    <!-- pockets -->
+    <g fill="#c06d1c">
+      <rect x="25" y="27" width="22" height="22" rx="6"/>
+      <rect x="53" y="27" width="22" height="22" rx="6"/>
+      <rect x="81" y="27" width="22" height="22" rx="6"/>
+      <rect x="25" y="55" width="22" height="22" rx="6"/>
+      <rect x="53" y="55" width="22" height="22" rx="6"/>
+      <rect x="81" y="55" width="22" height="22" rx="6"/>
+      <rect x="25" y="83" width="22" height="22" rx="6"/>
+      <rect x="53" y="83" width="22" height="22" rx="6"/>
+      <rect x="81" y="83" width="22" height="22" rx="6"/>
+    </g>
+    <g fill="#8f4c12">
+      <rect x="25" y="27" width="22" height="5" rx="2.5"/>
+      <rect x="53" y="27" width="22" height="5" rx="2.5"/>
+      <rect x="81" y="27" width="22" height="5" rx="2.5"/>
+      <rect x="25" y="55" width="22" height="5" rx="2.5"/>
+      <rect x="81" y="55" width="22" height="5" rx="2.5"/>
+      <rect x="25" y="83" width="22" height="5" rx="2.5"/>
+      <rect x="53" y="83" width="22" height="5" rx="2.5"/>
+      <rect x="81" y="83" width="22" height="5" rx="2.5"/>
+    </g>
+    <!-- melted puddle under the butter -->
+    <path d="M44 70 Q40 62 46 58 Q50 54 58 56 Q64 52 72 55 Q82 54 85 61 Q90 67 84 72 Q80 78 70 76 Q62 80 54 77 Q46 77 44 70 Z"
+          fill="#ffe36e" stroke="#5a3010" stroke-width="3.5" stroke-linejoin="round"/>
+    <!-- butter pat: a chunky block, top face lighter than the front -->
+    <g transform="rotate(8 64 62)">
+      <rect x="50" y="49" width="28" height="20" rx="5" fill="#ffd94d" stroke="#5a3010" stroke-width="3.5"/>
+      <rect x="50" y="49" width="28" height="12" rx="5" fill="#fff4b8" stroke="#5a3010" stroke-width="3.5"/>
+      <path d="M55 53 H66" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    </g>
   </g>
 </svg>

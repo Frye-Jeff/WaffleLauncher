@@ -1,3 +1,5 @@
+<p align="center"><img src="src/icons/waffle.svg" alt="WaffleLauncher logo: a cartoon waffle with a pat of butter" width="128" height="128"></p>
+
 # WaffleLauncher
 
 A privacy-first Firefox add-on that puts your favorite web apps (Google, Proton and more) one click away. Click the waffle button in the toolbar to get a 3×3 grid of your apps, and click one to open it in a new tab.
