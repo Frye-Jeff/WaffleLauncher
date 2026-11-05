@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "WaffleLauncher",
+  "version": "1.0.0",
+  "description": "A privacy-first toolbar launcher for your favorite web apps, in a 3×3 grid.",
+  "homepage_url": "https://github.com/Frye-Jeff/WaffleLauncher",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "wafflelauncher@frye-jeff",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    },
+    "gecko_android": {
+      "strict_min_version": "142.0"
+    }
+  },
+
+  "icons": {
+    "48": "icons/waffle.svg",
+    "96": "icons/waffle.svg"
+  },
+
+  "permissions": ["storage"],
+
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
+  },
+
+  "action": {
+    "default_title": "WaffleLauncher",
+    "default_popup": "popup/popup.html",
+    "default_icon": "icons/toolbar/waffle-dark.svg",
+    "theme_icons": [
+      {
+        "light": "icons/toolbar/waffle-light.svg",
+        "dark": "icons/toolbar/waffle-dark.svg",
+        "size": 16
+      },
+      {
+        "light": "icons/toolbar/waffle-light.svg",
+        "dark": "icons/toolbar/waffle-dark.svg",
+        "size": 32
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- Add-on icon (about:addons): blue squares, readable on light and dark backgrounds -->
+  <g fill="#0060df">
+    <rect x="3" y="3" width="12" height="12" rx="3"/>
+    <rect x="18" y="3" width="12" height="12" rx="3"/>
+    <rect x="33" y="3" width="12" height="12" rx="3"/>
+    <rect x="3" y="18" width="12" height="12" rx="3"/>
+    <rect x="18" y="18" width="12" height="12" rx="3"/>
+    <rect x="33" y="18" width="12" height="12" rx="3"/>
+    <rect x="3" y="33" width="12" height="12" rx="3"/>
+    <rect x="18" y="33" width="12" height="12" rx="3"/>
+    <rect x="33" y="33" width="12" height="12" rx="3"/>
+  </g>
+</svg>
