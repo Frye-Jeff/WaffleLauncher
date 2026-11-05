@@ -11,6 +11,18 @@ A privacy-first Firefox add-on that puts your favorite web apps (Google, Proton 
 - **Smart opening** (optional): reuse the current tab when it's a new or blank tab
 - **Syncs** your choices between devices through Firefox Sync, if you use it
 
+## Background
+
+WaffleLauncher started with someone else's good idea. I was a longtime user of [Google App Launcher](https://github.com/asolkar/ffx-addon-gglappbtn) by Mahesh Asolkar, a simple toolbar button that put my Google apps one click away. It did exactly what I needed, and I'm grateful he built it and shared it with everyone.
+
+After a while the original stopped receiving updates, and it needed some work to keep up with modern Firefox. I forked it and tried to send my fixes back to the original project so everyone could benefit, but they never made it in. That's completely understandable for a free project its author has moved on from.
+
+Rather than keep patching code that wasn't mine, I decided to start over. WaffleLauncher is a ground-up rewrite that shares none of the original code. It keeps the same simple idea and adds what I wanted: privacy first, apps beyond Google, dark mode and keyboard support. Thank you, Mahesh, for the inspiration.
+
+### About the use of AI
+
+I want to be upfront: this add-on was built with heavy help from AI. I know that's a turn-off for many people, and I respect that. For me, it made it possible to build something that fits exactly what I needed. Every change was reviewed and tested before it was committed, and the add-on's privacy rules, tests and checks are all in this repository for anyone to inspect.
+
 ## Privacy
 
 WaffleLauncher collects no data. None.
@@ -120,18 +132,6 @@ src/
 scripts/             dev-only: the app list check
 tests/               dev-only: unit tests
 ```
-
-## Background
-
-WaffleLauncher started with someone else's good idea. I was a longtime user of [Google App Launcher](https://github.com/asolkar/ffx-addon-gglappbtn) by Mahesh Asolkar, a simple toolbar button that put my Google apps one click away. It did exactly what I needed, and I'm grateful he built it and shared it with everyone.
-
-After a while the original stopped receiving updates, and it needed some work to keep up with modern Firefox. I forked it and tried to send my fixes back to the original project so everyone could benefit, but they never made it in. That's completely understandable for a free project its author has moved on from.
-
-Rather than keep patching code that wasn't mine, I decided to start over. WaffleLauncher is a ground-up rewrite that shares none of the original code. It keeps the same simple idea and adds what I wanted: privacy first, apps beyond Google, dark mode and keyboard support. Thank you, Mahesh, for the inspiration.
-
-### About the use of AI
-
-I want to be upfront: this add-on was built with heavy help from AI. I know that's a turn-off for many people, and I respect that. For me, it made it possible to build something that fits exactly what I needed. Every change was reviewed and tested before it was committed, and the add-on's privacy rules, tests and checks are all in this repository for anyone to inspect.
 
 ## Support
 
