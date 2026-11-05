@@ -7,6 +7,8 @@ A privacy-first Firefox add-on that puts your favorite web apps one click away. 
 - **Drag or use the keyboard to reorder**, right in the popup
 - **Options page** to pick which apps appear
 - **Light, dark or automatic** look, matching Firefox by default
+- **Background tabs:** Ctrl-click (Cmd-click on Mac) or middle-click to open several apps at once
+- **Smart opening** (optional): reuse the current tab when it's a new or blank tab
 - **Syncs** your choices between devices through Firefox Sync, if you use it
 
 ## Privacy
@@ -14,10 +16,12 @@ A privacy-first Firefox add-on that puts your favorite web apps one click away. 
 WaffleLauncher collects no data. None.
 
 - **No data collection, analytics or telemetry.** The add-on declares to Firefox that it collects no data.
-- **One permission: `storage`.** It's used only to remember your choices.
-- **The only things stored are your chosen apps, in order, and your theme choice** (Light or Dark; Automatic stores nothing). If you use Firefox Sync, they sync between your devices like your other Firefox settings. Nothing about your browsing, clicks or usage is stored.
+- **Two permissions:**
+  - `storage`, to remember your choices.
+  - `activeTab`, used only by the optional **Smart** setting. When you click an app with Smart turned on, WaffleLauncher checks the address of the tab you're on, once, to see whether it's a new or blank tab. That address is never stored or sent anywhere. `activeTab` only covers the tab you're on, and only while you're using the popup; it never gives access to your other tabs or to any page's content.
+- **The only things stored are your chosen apps (in order), your theme choice, and whether Smart opening is on.** Defaults (Automatic theme, New tab) store nothing. If you use Firefox Sync, these sync between your devices like your other Firefox settings. Nothing about your browsing, clicks or usage is stored.
 - **No network requests.** Every icon and script is bundled with the add-on, and its pages run under a strict content security policy that blocks loading anything from the internet.
-- **No access to websites.** That's why Firefox's Extensions menu shows *"Can't read and change data on this site"* for WaffleLauncher. It can't see or change any page you visit.
+- **No access to page content.** WaffleLauncher can't read or change any page you visit.
 - **Plain links.** Apps open at their normal addresses, with no tracking or referral codes added.
 
 ## Install
@@ -28,7 +32,8 @@ Coming soon to [addons.mozilla.org](https://addons.mozilla.org/). Requires Firef
 
 **Popup.** Click the waffle button in the toolbar.
 
-- Click an app to open it in a new tab. You can also press Tab to move between apps and Enter to open one.
+- Click an app to open it in a new tab (or, with **Smart** on, in the current tab if it's a new or blank tab). You can also press Tab to move between apps and Enter to open one.
+- **Ctrl-click** (Cmd-click on Mac), **middle-click**, or **Ctrl+Enter** opens an app in a background tab and keeps the popup open, so you can open several in a row.
 - Hover over an app to see its full name.
 - Drag an app onto another to move it there. The new order saves right away.
 - **With the keyboard:** use the arrow keys (and Home/End) to move between apps, and **Ctrl + arrow keys** to move the selected app one spot. On a Mac, **Option + arrow keys** works too.
@@ -38,8 +43,9 @@ Coming soon to [addons.mozilla.org](https://addons.mozilla.org/). Requires Firef
 - Check an app to add it to the end of your grid; uncheck it to remove it. Changes save right away.
 - Your grid holds up to 9 apps. When it's full, uncheck one to make room for another. The last app can't be removed, so the grid is never empty.
 - Drag apps in the **Your grid** preview to reorder them, or use the same keyboard shortcuts as in the popup.
+- Under **Opening apps**, choose **New tab** (the default) or **Smart** (use the current tab when it's a new or blank tab, otherwise a new tab).
 - Under **Appearance**, choose **Automatic** (match Firefox), **Light** or **Dark**. The popup and options page switch right away.
-- **Restore defaults** brings back the original 9 apps and the Automatic theme.
+- **Restore defaults** brings back the original 9 apps, New tab and the Automatic theme.
 
 ## Supported apps
 
@@ -88,8 +94,9 @@ Only the `src/` folder ships in the add-on:
 src/
 ├── manifest.json
 ├── apps.js          app list: every app, plus the defaults
-├── settings.js      loads and saves your apps and theme (the only code that uses storage)
+├── settings.js      loads and saves your settings (the only code that uses storage)
 ├── theme.js         applies the light, dark or automatic theme to a page
+├── open.js          rules for how a click opens an app (new, current or background tab)
 ├── grid/            tiles, drag and keyboard reordering, shared by the popup and options page
 ├── popup/           the toolbar popup
 ├── options/         the options page

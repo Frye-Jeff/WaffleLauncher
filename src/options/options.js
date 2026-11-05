@@ -1,20 +1,24 @@
 // -----------------------------------------------------------------------------
 // Options page: choose which apps appear (checkboxes grouped by service), their
-// order (drag in the grid preview), and the theme. Every change saves
-// immediately.
+// order (drag in the grid preview), how apps open, and the theme. Every change
+// saves immediately.
 // -----------------------------------------------------------------------------
 import { APPS, GRID_SIZE, SERVICES } from "../apps.js";
 import {
   loadAppIds,
+  loadOpenMode,
   loadTheme,
   moveItem,
   onAppIdsChanged,
+  onOpenModeChanged,
   onThemeChanged,
   resetSettings,
   saveAppIds,
+  saveOpenMode,
   saveTheme,
 } from "../settings.js";
 import {
+  IS_MAC,
   MOVE_KEY_LABEL,
   createTile,
   enableDragReorder,
@@ -34,11 +38,10 @@ const fullNote = document.getElementById("full-note");
 const services = document.getElementById("services");
 const restore = document.getElementById("restore");
 const status = document.getElementById("status");
-const themeInputs = [...document.querySelectorAll('input[name="theme"]')];
+const backgroundNote = document.getElementById("background-note");
 
 const checkboxes = new Map(); // app id -> <input type="checkbox">
 let appIds = [];
-let theme = "auto";
 let statusTimer;
 
 // --- Drawing ----------------------------------------------------------------
@@ -104,12 +107,6 @@ function render(ids) {
   }
 }
 
-function renderTheme(next) {
-  theme = next;
-  applyTheme(theme);
-  for (const input of themeInputs) input.checked = input.value === theme;
-}
-
 function showStatus(message, isError = false) {
   clearTimeout(statusTimer);
   status.textContent = message;
@@ -135,24 +132,45 @@ function toggleApp(id, checked) {
   commit(next);
 }
 
-async function chooseTheme(next) {
-  const previous = theme;
-  renderTheme(next);
-  try {
-    renderTheme(await saveTheme(next));
-    showStatus("Saved");
-  } catch {
-    renderTheme(previous); // not saved: show what's actually stored
-    showStatus("Couldn't save. Please try again.", true);
+// A group of radio buttons for one setting (`name`): saves a change
+// immediately, and calls `apply(value)` whenever the shown value changes.
+// Returns a function that shows a value without saving it.
+function radioSetting(name, save, apply = () => {}) {
+  const inputs = [...document.querySelectorAll(`input[name="${name}"]`)];
+  let value;
+  const show = (next) => {
+    value = next;
+    apply(value);
+    for (const input of inputs) input.checked = input.value === value;
+  };
+  for (const input of inputs) {
+    input.addEventListener("change", async () => {
+      if (!input.checked) return;
+      const previous = value;
+      show(input.value);
+      try {
+        show(await save(input.value));
+        showStatus("Saved");
+      } catch {
+        show(previous); // not saved: show what's actually stored
+        showStatus("Couldn't save. Please try again.", true);
+      }
+    });
   }
+  return show;
 }
 
-// Resets everything: the default apps and the Automatic theme.
+const showOpenMode = radioSetting("open", saveOpenMode);
+const showTheme = radioSetting("theme", saveTheme, applyTheme);
+
+// Resets everything: the default apps, opening in a new tab, and the
+// Automatic theme.
 async function restoreDefaults() {
   try {
     const defaults = await resetSettings();
     render(defaults.apps);
-    renderTheme(defaults.theme);
+    showOpenMode(defaults.open);
+    showTheme(defaults.theme);
     showStatus("Saved");
   } catch {
     showStatus("Couldn't save. Please try again.", true);
@@ -167,12 +185,15 @@ enableDragReorder(grid, reorder);
 enableKeyboardReorder(grid, reorder);
 orderHint.textContent =
   `Drag apps to change their order. With the keyboard, use the arrow keys to pick an app and ${MOVE_KEY_LABEL} + arrow keys to move it.`;
+backgroundNote.textContent =
+  `${IS_MAC ? "Cmd" : "Ctrl"}-click or middle-click an app to open it in a background tab ` +
+  "and keep the popup open, whichever setting you choose.";
 restore.addEventListener("click", restoreDefaults);
-for (const input of themeInputs) {
-  input.addEventListener("change", () => { if (input.checked) chooseTheme(input.value); });
-}
-const [ids, savedTheme] = await Promise.all([loadAppIds(), loadTheme()]);
-renderTheme(savedTheme);
+const [ids, savedOpenMode, savedTheme] =
+  await Promise.all([loadAppIds(), loadOpenMode(), loadTheme()]);
+showTheme(savedTheme);
+showOpenMode(savedOpenMode);
 render(ids);
 onAppIdsChanged(render);
-onThemeChanged(renderTheme);
+onOpenModeChanged(showOpenMode);
+onThemeChanged(showTheme);

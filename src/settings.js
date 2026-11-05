@@ -2,13 +2,14 @@
 // Settings: the only code that reads or writes storage.
 //
 // The add-on stores exactly one setting object:
-//   storage.sync  "settings" = { version: 1, apps: ["google-gmail", ...], theme: "dark" }
+//   storage.sync  "settings" = { version: 1, apps: [...], theme: "dark", open: "smart" }
 //   - apps   the user's chosen apps, in grid order (absent = the defaults)
 //   - theme  "light" or "dark" (absent = "auto", follow Firefox)
+//   - open   "smart" (absent = "new-tab"): how a normal click opens an app
 // Nothing about browsing, clicks or usage is ever stored.
 //
-// Each save updates only its own field and keeps the rest, so saving apps never
-// loses the theme and vice versa. Every app list going in or out is cleaned the
+// Each save updates only its own field and keeps the rest, so saving one
+// setting never loses another. Every app list going in or out is cleaned the
 // same way (known IDs only, no duplicates, at most GRID_SIZE), so the popup and
 // options page always agree.
 // -----------------------------------------------------------------------------
@@ -19,6 +20,9 @@ export const SETTINGS_VERSION = 1;
 
 export const THEMES = Object.freeze(["auto", "light", "dark"]);
 export const DEFAULT_THEME = "auto";
+
+export const OPEN_MODES = Object.freeze(["new-tab", "smart"]);
+export const DEFAULT_OPEN_MODE = "new-tab";
 
 const KNOWN_IDS = new Set(APPS.map((app) => app.id));
 
@@ -48,6 +52,11 @@ function appIdsFrom(stored) {
 // Turns a stored settings object into a valid theme, defaulting to "auto".
 function themeFrom(stored) {
   return THEMES.includes(stored?.theme) ? stored.theme : DEFAULT_THEME;
+}
+
+// Turns a stored settings object into a valid open mode, defaulting to "new-tab".
+function openModeFrom(stored) {
+  return OPEN_MODES.includes(stored?.open) ? stored.open : DEFAULT_OPEN_MODE;
 }
 
 // Reads the stored settings object for an update. Rejects if storage fails, so
@@ -88,33 +97,52 @@ export async function saveAppIds(ids) {
   return clean.length ? clean : [...DEFAULT_APP_IDS];
 }
 
-// Loads the user's theme: "auto", "light" or "dark". Never throws: on any
-// storage problem it returns "auto".
-export async function loadTheme() {
+// Loads one choice-type setting. Never throws: on any storage problem it
+// returns `fallback`.
+async function loadChoice(read, fallback) {
   try {
     const result = await browser.storage.sync.get(STORAGE_KEY);
-    return themeFrom(result?.[STORAGE_KEY]);
+    return read(result?.[STORAGE_KEY]);
   } catch {
-    return DEFAULT_THEME;
+    return fallback;
   }
 }
 
-// Saves the user's theme (keeping the apps) and returns it. "auto" is stored
-// by leaving the field out. Rejects on an unknown theme or a storage failure.
-export async function saveTheme(theme) {
-  if (!THEMES.includes(theme)) throw new Error(`Unknown theme: ${theme}`);
+// Saves one choice-type setting (keeping the others) and returns it. The
+// default value is stored by leaving the field out. Rejects on an unknown
+// value or a storage failure.
+async function saveChoice(field, value, allowed, fallback) {
+  if (!allowed.includes(value)) throw new Error(`Unknown ${field}: ${value}`);
   const settings = await readForUpdate();
-  if (theme === DEFAULT_THEME) delete settings.theme;
-  else settings.theme = theme;
+  if (value === fallback) delete settings[field];
+  else settings[field] = value;
   await write(settings);
-  return theme;
+  return value;
 }
 
-// Removes all saved settings, so the default apps and the "auto" theme apply.
-// Returns the defaults. Rejects if storage fails.
+// The user's theme: "auto", "light" or "dark".
+export function loadTheme() {
+  return loadChoice(themeFrom, DEFAULT_THEME);
+}
+
+export function saveTheme(theme) {
+  return saveChoice("theme", theme, THEMES, DEFAULT_THEME);
+}
+
+// How a normal click opens an app: "new-tab" or "smart".
+export function loadOpenMode() {
+  return loadChoice(openModeFrom, DEFAULT_OPEN_MODE);
+}
+
+export function saveOpenMode(mode) {
+  return saveChoice("open", mode, OPEN_MODES, DEFAULT_OPEN_MODE);
+}
+
+// Removes all saved settings, so every default applies again. Returns the
+// defaults. Rejects if storage fails.
 export async function resetSettings() {
   await browser.storage.sync.remove(STORAGE_KEY);
-  return { apps: [...DEFAULT_APP_IDS], theme: DEFAULT_THEME };
+  return { apps: [...DEFAULT_APP_IDS], theme: DEFAULT_THEME, open: DEFAULT_OPEN_MODE };
 }
 
 // Calls `callback(value)` whenever the settings change, whether from this
@@ -138,6 +166,11 @@ export function onAppIdsChanged(callback) {
 // Calls `callback(theme)` with the theme when the settings change.
 export function onThemeChanged(callback) {
   return onSettingsChanged(themeFrom, callback);
+}
+
+// Calls `callback(mode)` with the open mode when the settings change.
+export function onOpenModeChanged(callback) {
+  return onSettingsChanged(openModeFrom, callback);
 }
 
 // Returns a copy of `list` with the item at index `from` moved to index `to`.

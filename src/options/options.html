@@ -25,18 +25,28 @@
       <div id="services"></div>
     </section>
 
+    <section class="panel" aria-labelledby="opening-heading">
+      <h2 id="opening-heading">Opening apps</h2>
+      <p class="hint">What happens when you click an app in the popup.</p>
+      <div class="choices" role="radiogroup" aria-labelledby="opening-heading">
+        <label class="choice"><input type="radio" name="open" value="new-tab"> New tab</label>
+        <label class="choice"><input type="radio" name="open" value="smart"> Smart: use the current tab if it's a new or blank tab, otherwise a new tab</label>
+      </div>
+      <p class="hint choice-note" id="background-note"></p>
+    </section>
+
     <section class="panel" aria-labelledby="appearance-heading">
       <h2 id="appearance-heading">Appearance</h2>
       <p class="hint">Choose how WaffleLauncher looks. Automatic matches Firefox.</p>
-      <div class="theme-choices" role="radiogroup" aria-labelledby="appearance-heading">
-        <label class="theme-choice"><input type="radio" name="theme" value="auto"> Automatic</label>
-        <label class="theme-choice"><input type="radio" name="theme" value="light"> Light</label>
-        <label class="theme-choice"><input type="radio" name="theme" value="dark"> Dark</label>
+      <div class="choices" role="radiogroup" aria-labelledby="appearance-heading">
+        <label class="choice"><input type="radio" name="theme" value="auto"> Automatic</label>
+        <label class="choice"><input type="radio" name="theme" value="light"> Light</label>
+        <label class="choice"><input type="radio" name="theme" value="dark"> Dark</label>
       </div>
     </section>
 
     <div class="actions">
-      <button type="button" id="restore" title="Restores the default apps and the Automatic theme.">Restore defaults</button>
+      <button type="button" id="restore" title="Restores the default apps, opening apps in a new tab, and the Automatic theme.">Restore defaults</button>
       <p id="status" class="status" role="status" aria-live="polite"></p>
     </div>
   </main>

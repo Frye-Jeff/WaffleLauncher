@@ -8,8 +8,8 @@ import { gridKeyAction } from "./keys.js";
 // Custom drag type, so a tile dropped outside the grid carries nothing usable.
 const DRAG_TYPE = "application/x-wafflelauncher-tile";
 
-// Read locally to pick the reorder shortcut; never stored or sent anywhere.
-const IS_MAC = /^Mac/i.test(navigator.platform);
+// Read locally to pick keyboard shortcuts; never stored or sent anywhere.
+export const IS_MAC = /^Mac/i.test(navigator.platform);
 
 // The reorder modifier, for hint text: "Ctrl" or "Ctrl or Option".
 export const MOVE_KEY_LABEL = IS_MAC ? "Ctrl or Option" : "Ctrl";
@@ -34,7 +34,8 @@ function stateFor(grid) {
 }
 
 // Builds one <li> tile. With `onOpen`, the tile is a link that calls
-// onOpen(app) when activated (popup). Without it, the tile is display-only
+// onOpen(app, event) when clicked, middle-clicked or activated with Enter
+// (popup). Without it, the tile is display-only
 // (options preview). `count` is the number of tiles, for the position that
 // screen readers announce ("Gmail, 1 of 9").
 export function createTile(app, index, { onOpen, count } = {}) {
@@ -55,7 +56,17 @@ export function createTile(app, index, { onOpen, count } = {}) {
     body.href = app.url;
     body.addEventListener("click", (event) => {
       event.preventDefault();
-      onOpen(app);
+      onOpen(app, event);
+    });
+    // Middle-click arrives as "auxclick", not "click".
+    body.addEventListener("auxclick", (event) => {
+      if (event.button !== 1) return;
+      event.preventDefault();
+      onOpen(app, event);
+    });
+    // Stop middle-button autoscroll from starting on a tile.
+    body.addEventListener("mousedown", (event) => {
+      if (event.button === 1) event.preventDefault();
     });
   }
 

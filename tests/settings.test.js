@@ -4,17 +4,22 @@ import assert from "node:assert/strict";
 import { installFakeBrowser } from "./fake-browser.js";
 import { APPS, DEFAULT_APP_IDS, GRID_SIZE } from "../src/apps.js";
 import {
+  DEFAULT_OPEN_MODE,
   DEFAULT_THEME,
+  OPEN_MODES,
   SETTINGS_VERSION,
   THEMES,
   cleanAppIds,
   loadAppIds,
+  loadOpenMode,
   loadTheme,
   moveItem,
   onAppIdsChanged,
+  onOpenModeChanged,
   onThemeChanged,
   resetSettings,
   saveAppIds,
+  saveOpenMode,
   saveTheme,
 } from "../src/settings.js";
 
@@ -190,13 +195,63 @@ describe("saveTheme", () => {
   });
 });
 
+describe("loadOpenMode / saveOpenMode", () => {
+  test("defaults to new-tab", async () => {
+    assert.equal(DEFAULT_OPEN_MODE, "new-tab");
+    assert.equal(await loadOpenMode(), "new-tab");
+  });
+
+  test("saves smart, keeping the apps and theme", async () => {
+    fake.data.set(KEY, { version: 1, apps: ["google-drive"], theme: "dark" });
+    assert.equal(await saveOpenMode("smart"), "smart");
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION, apps: ["google-drive"], theme: "dark", open: "smart" });
+    assert.equal(await loadOpenMode(), "smart");
+  });
+
+  test("new-tab is stored by leaving the field out", async () => {
+    fake.data.set(KEY, { version: 1, open: "smart" });
+    await saveOpenMode("new-tab");
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION });
+  });
+
+  test("saving apps or the theme keeps the open mode", async () => {
+    await saveOpenMode("smart");
+    await saveAppIds(["google-gmail"]);
+    await saveTheme("light");
+    assert.equal(await loadOpenMode(), "smart");
+  });
+
+  test("returns new-tab for an unknown value or a storage failure", async () => {
+    fake.data.set(KEY, { version: 1, open: "current-tab" });
+    assert.equal(await loadOpenMode(), "new-tab");
+    fake.failNext = "get";
+    assert.equal(await loadOpenMode(), "new-tab");
+  });
+
+  test("accepts every mode in OPEN_MODES and rejects others without writing", async () => {
+    for (const mode of OPEN_MODES) assert.equal(await saveOpenMode(mode), mode);
+    fake.data.clear();
+    await assert.rejects(saveOpenMode("current-tab"));
+    assert.equal(fake.data.has(KEY), false);
+  });
+
+  test("onOpenModeChanged reports the mode", async () => {
+    const seen = [];
+    onOpenModeChanged((mode) => seen.push(mode));
+    await saveOpenMode("smart");
+    await resetSettings();
+    assert.deepEqual(seen, ["smart", "new-tab"]);
+  });
+});
+
 describe("resetSettings", () => {
-  test("removes all saved settings and returns the default apps and theme", async () => {
-    fake.data.set(KEY, { version: 1, apps: ["google-gmail"], theme: "dark" });
-    assert.deepEqual(await resetSettings(), { apps: [...DEFAULT_APP_IDS], theme: "auto" });
+  test("removes all saved settings and returns every default", async () => {
+    fake.data.set(KEY, { version: 1, apps: ["google-gmail"], theme: "dark", open: "smart" });
+    assert.deepEqual(await resetSettings(), { apps: [...DEFAULT_APP_IDS], theme: "auto", open: "new-tab" });
     assert.equal(fake.data.has(KEY), false);
     assert.deepEqual(await loadAppIds(), [...DEFAULT_APP_IDS]);
     assert.equal(await loadTheme(), "auto");
+    assert.equal(await loadOpenMode(), "new-tab");
   });
 
   test("rejects when storage fails", async () => {

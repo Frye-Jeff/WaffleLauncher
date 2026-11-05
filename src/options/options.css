@@ -112,27 +112,31 @@ h3 {
   object-fit: contain;
 }
 
-/* Appearance */
-.theme-choices {
+/* Radio choices (Opening apps, Appearance) */
+.choices {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 24px;
 }
 
-.theme-choice {
+.choice {
   display: flex;
   align-items: center;
   gap: 6px;
   cursor: pointer;
 }
 
-.theme-choice input {
+.choice input {
   margin: 0;
 }
 
-.theme-choice input:focus-visible {
+.choice input:focus-visible {
   outline: 2px solid var(--wl-focus-ring);
   outline-offset: 2px;
+}
+
+.choice-note {
+  margin: 12px 0 0;
 }
 
 /* Actions and status */
