@@ -2,6 +2,7 @@
   "name": "wafflelauncher",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Firefox add-on: a privacy-first 3x3 app launcher in the toolbar",
   "license": "MPL-2.0",
   "repository": {
@@ -9,6 +10,7 @@
     "url": "https://github.com/Frye-Jeff/WaffleLauncher.git"
   },
   "scripts": {
+    "check": "node scripts/check-apps.mjs",
     "start": "web-ext run --source-dir src",
     "lint": "web-ext lint --source-dir src",
     "build": "web-ext build --source-dir src --overwrite-dest"
