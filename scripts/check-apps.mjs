@@ -101,6 +101,11 @@ for (const [index, app] of APPS.entries()) {
     for (const [pattern, what] of SVG_EXTERNAL) {
       if (pattern.test(svg)) errors.push(`src/${app.icon}: privacy: contains ${what}`);
     }
+    // Common ways an SVG becomes invalid XML, which Firefox then won't display.
+    if (!/<svg[\s>]/i.test(svg)) errors.push(`src/${app.icon}: no <svg> element found`);
+    for (const [, comment] of svg.matchAll(/<!--([\s\S]*?)-->/g)) {
+      if (comment.includes("--")) errors.push(`src/${app.icon}: "--" inside an XML comment makes the SVG invalid`);
+    }
   } else {
     const png = readFileSync(iconPath);
     const isPng = png.length > 24 && png.toString("latin1", 1, 4) === "PNG";

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <!-- Temporary app icon, used until each app's official icon is added.
-       `npm run check -- --release` fails while any app still uses it. -->
+       The release check in scripts/check-apps.mjs fails while any app uses it. -->
   <rect x="4" y="4" width="56" height="56" rx="12" fill="#cfcfd8"/>
   <rect x="20" y="20" width="24" height="24" rx="5" fill="#8f8f9d"/>
 </svg>
