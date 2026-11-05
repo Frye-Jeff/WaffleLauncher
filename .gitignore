@@ -1,0 +1,9 @@
+# Dependencies (dev only: web-ext)
+node_modules/
+
+# Packaged add-on output from `npm run build`
+web-ext-artifacts/
+
+# OS junk files
+.DS_Store
+Thumbs.db
