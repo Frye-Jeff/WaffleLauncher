@@ -29,6 +29,9 @@ export const SERVICES = Object.freeze({
     // alphabetized within each one (see catalog.js).
     groups: { everyday: "Everyday", business: "Business and developer" },
   },
+  proton: { name: "Proton" },
+  // Single apps from other companies.
+  other: { name: "Other" },
 });
 
 // A new app without its official icon yet can use "icons/placeholder.svg".
@@ -91,6 +94,23 @@ export const APPS = Object.freeze([
   { id: "google-business-profile", service: "google", group: "business", shortName: "Business", name: "Google Business Profile", url: "https://business.google.com/", icon: "icons/google/business-profile.png" },
   { id: "google-ai-studio",     service: "google", group: "business", shortName: "AI Studio",  name: "Google AI Studio",     url: "https://aistudio.google.com/",      icon: "icons/google/ai-studio.png" },
   { id: "google-labs",          service: "google", group: "business", shortName: "Labs",       name: "Google Labs",          url: "https://labs.google/",              icon: "icons/google/labs.png" },
+
+  { id: "proton-mail",           service: "proton", shortName: "Mail",       name: "Proton Mail",     url: "https://mail.proton.me/",       icon: "icons/proton/mail.svg" },
+  { id: "proton-calendar",       service: "proton", shortName: "Calendar",   name: "Proton Calendar", url: "https://calendar.proton.me/",   icon: "icons/proton/calendar.svg" },
+  { id: "proton-drive",          service: "proton", shortName: "Drive",      name: "Proton Drive",    url: "https://drive.proton.me/",      icon: "icons/proton/drive.svg" },
+  { id: "proton-docs",           service: "proton", shortName: "Docs",       name: "Proton Docs",     url: "https://docs.proton.me/",       icon: "icons/proton/docs.svg" },
+  { id: "proton-sheets",         service: "proton", shortName: "Sheets",     name: "Proton Sheets",   url: "https://sheets.proton.me/",     icon: "icons/proton/sheets.svg" },
+  { id: "proton-pass",           service: "proton", shortName: "Pass",       name: "Proton Pass",     url: "https://pass.proton.me/",       icon: "icons/proton/pass.svg" },
+  { id: "proton-wallet",         service: "proton", shortName: "Wallet",     name: "Proton Wallet",   url: "https://wallet.proton.me/",     icon: "icons/proton/wallet.svg" },
+  { id: "proton-meet",           service: "proton", shortName: "Meet",       name: "Proton Meet",     url: "https://meet.proton.me/",       icon: "icons/proton/meet.svg" },
+  { id: "proton-lumo",           service: "proton", shortName: "Lumo",       name: "Lumo",            url: "https://lumo.proton.me/",       icon: "icons/proton/lumo.svg" },
+  { id: "proton-account",        service: "proton", shortName: "Account",    name: "Proton Account",  url: "https://account.proton.me/",    icon: "icons/proton/account.svg" },
+  { id: "proton-standard-notes", service: "proton", shortName: "Notes",      name: "Standard Notes",  url: "https://app.standardnotes.com/", icon: "icons/proton/standard-notes.svg" },
+  { id: "proton-simplelogin",    service: "proton", shortName: "SimpleLogin", name: "SimpleLogin",    url: "https://app.simplelogin.io/",   icon: "icons/proton/simplelogin.svg" },
+
+  { id: "other-apple-maps",      service: "other",  shortName: "Apple Maps", name: "Apple Maps",      url: "https://maps.apple.com/",       icon: "icons/other/apple-maps.png" },
+  { id: "other-chatgpt",         service: "other",  shortName: "ChatGPT",    name: "ChatGPT",         url: "https://chatgpt.com/",          icon: "icons/other/chatgpt.png" },
+  { id: "other-claude",          service: "other",  shortName: "Claude",     name: "Claude",          url: "https://claude.ai/",            icon: "icons/other/claude.svg" },
 ].map((app) => Object.freeze(app)));
 
 // The grid a new user starts with, in order. Listed explicitly so that adding

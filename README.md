@@ -1,6 +1,6 @@
 # WaffleLauncher
 
-A privacy-first Firefox add-on that puts your favorite web apps one click away. Click the waffle button in the toolbar to get a 3×3 grid of your apps, and click one to open it in a new tab.
+A privacy-first Firefox add-on that puts your favorite web apps (Google, Proton and more) one click away. Click the waffle button in the toolbar to get a 3×3 grid of your apps, and click one to open it in a new tab.
 
 - **Toolbar waffle button** that matches light and dark Firefox themes
 - **3×3 grid** of the apps you choose
@@ -56,6 +56,14 @@ Coming soon to [addons.mozilla.org](https://addons.mozilla.org/). Requires Firef
 **Everyday (45):** Google Account, Google Arts & Culture, Blogger, Google Calendar, Google Chat, Google Classroom, Google Contacts, Google Docs, Google Drive, Google Earth, Google Finance, Find Hub, Google Flights, Google Fonts, Google Forms, Google Gemini, Gemini Notebook, Gmail, Google Groups, Google Home, Google Keep, Google Maps, Google Meet, Google Messages, Google News, Google One, Google Photos, Google Play, Google Play Books, Google Scholar, Google Search, Google Sheets, Google Shopping, Google Sites, Google Slides, Google Tasks, Google Translate, Google Trends, Google Vids, Google Voice, Google Wallet, YouTube, YouTube Kids, YouTube Music, YouTube TV.
 
 **Business and developer (8):** Google Admin console, Google Ads, Google AI Studio, Google Analytics, Google Business Profile, Google Cloud console, Google Labs, Google Search Console.
+
+### Proton
+
+Lumo, Proton Account, Proton Calendar, Proton Docs, Proton Drive, Proton Mail, Proton Meet, Proton Pass, Proton Sheets, Proton Wallet, SimpleLogin, Standard Notes.
+
+### Other
+
+Apple Maps, ChatGPT, Claude.
 <!-- apps:end -->
 
 The default grid is Gmail, Calendar, Sheets, Drive, Gemini, Docs, Photos, Maps and Keep.
@@ -119,7 +127,15 @@ If WaffleLauncher is useful to you, you can [buy me a coffee on Ko-fi](https://k
 
 ## Trademarks
 
-Google, Gmail, YouTube and related product names and logos are trademarks of Google LLC. WaffleLauncher is an independent project and is not affiliated with or endorsed by Google, or by any other service it links to.
+App names and logos belong to their owners:
+
+- Google, Gmail, YouTube and related product names and logos are trademarks of Google LLC.
+- Proton, Proton Mail, Lumo, Standard Notes, SimpleLogin and related product names and logos are trademarks of Proton AG.
+- Claude is a trademark of Anthropic, PBC.
+- ChatGPT is a trademark of OpenAI.
+- Apple and Apple Maps are trademarks of Apple Inc.
+
+WaffleLauncher is an independent project and is not affiliated with or endorsed by any of these companies or the services it links to.
 
 ## License
 

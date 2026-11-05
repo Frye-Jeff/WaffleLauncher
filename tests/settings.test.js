@@ -262,7 +262,7 @@ describe("resetSettings", () => {
 
 describe("sync safety", () => {
   test("loading never writes, so a newer version's data is left alone", async () => {
-    const newer = { version: SETTINGS_VERSION + 1, apps: ["proton-mail", "google-gmail"], extra: true };
+    const newer = { version: SETTINGS_VERSION + 1, apps: ["futureservice-mail", "google-gmail"], extra: true };
     fake.data.set(KEY, structuredClone(newer));
     assert.deepEqual(await loadAppIds(), ["google-gmail"]);
     await loadTheme();
