@@ -42,7 +42,7 @@ export const APPS = Object.freeze([
   { id: "google-meet",          service: "google", shortName: "Meet",       name: "Google Meet",      url: "https://meet.google.com/",       icon: PLACEHOLDER },
   { id: "google-contacts",      service: "google", shortName: "Contacts",   name: "Google Contacts",  url: "https://contacts.google.com/",   icon: PLACEHOLDER },
   { id: "google-classroom",     service: "google", shortName: "Classroom",  name: "Google Classroom", url: "https://classroom.google.com/",  icon: PLACEHOLDER },
-  { id: "google-notebooklm",    service: "google", shortName: "NotebookLM", name: "NotebookLM",       url: "https://notebooklm.google.com/", icon: PLACEHOLDER },
+  { id: "google-gemini-notebook", service: "google", shortName: "Notebook", name: "Gemini Notebook",  url: "https://notebook.google.com/",   icon: PLACEHOLDER },
   { id: "google-translate",     service: "google", shortName: "Translate",  name: "Google Translate", url: "https://translate.google.com/",  icon: PLACEHOLDER },
   { id: "google-news",          service: "google", shortName: "News",       name: "Google News",      url: "https://news.google.com/",       icon: PLACEHOLDER },
   { id: "google-messages",      service: "google", shortName: "Messages",   name: "Google Messages",  url: "https://messages.google.com/",   icon: PLACEHOLDER },
