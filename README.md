@@ -84,7 +84,7 @@ Lumo, Proton Account, Proton Calendar, Proton Docs, Proton Drive, Proton Mail, P
 
 ### Other
 
-Apple Maps, ChatGPT, Claude.
+Apple Maps, ChatGPT, Claude, Duck.ai.
 <!-- apps:end -->
 
 The default grid is Gmail, Calendar, Sheets, Drive, Gemini, Docs, Photos, Maps and Keep.
@@ -155,6 +155,7 @@ App names and logos belong to their owners:
 - Claude is a trademark of Anthropic, PBC.
 - ChatGPT is a trademark of OpenAI.
 - Apple and Apple Maps are trademarks of Apple Inc.
+- DuckDuckGo and Duck.ai are trademarks of DuckDuckGo, Inc.
 
 WaffleLauncher is an independent project and is not affiliated with or endorsed by any of these companies or the services it links to.
 
