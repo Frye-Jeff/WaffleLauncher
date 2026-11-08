@@ -48,7 +48,7 @@ WaffleLauncher collects no data. None.
 
 ## Install
 
-Coming soon to [addons.mozilla.org](https://addons.mozilla.org/). Requires Firefox 140 or later (Firefox for Android 142 or later).
+Get [WaffleLauncher on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/wafflelauncher/). Requires Firefox 140 or later (Firefox for Android 142 or later).
 
 ## Using it
 
