@@ -86,6 +86,7 @@ export const APPS = Object.freeze([
   { id: "google-youtube-tv",    service: "google", group: "everyday", shortName: "YouTube TV", name: "YouTube TV",           url: "https://tv.youtube.com/",           icon: "icons/google/youtube-tv.png" },
   { id: "google-fonts",         service: "google", group: "everyday", shortName: "Fonts",      name: "Google Fonts",         url: "https://fonts.google.com/",         icon: "icons/google/fonts.png" },
   { id: "google-trends",        service: "google", group: "everyday", shortName: "Trends",     name: "Google Trends",        url: "https://trends.google.com/",        icon: "icons/google/trends.png" },
+  { id: "google-remote-desktop", service: "google", group: "everyday", shortName: "Remote Desktop", name: "Chrome Remote Desktop", url: "https://remotedesktop.google.com/", icon: "icons/google/remote-desktop.png" },
 
   { id: "google-ads",           service: "google", group: "business", shortName: "Ads",        name: "Google Ads",           url: "https://ads.google.com/",           icon: "icons/google/ads.png" },
   { id: "google-analytics",     service: "google", group: "business", shortName: "Analytics",  name: "Google Analytics",     url: "https://analytics.google.com/",     icon: "icons/google/analytics.png" },
