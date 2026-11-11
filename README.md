@@ -67,7 +67,7 @@ Get [WaffleLauncher on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox
 - Drag apps in the **Your grid** preview to reorder them, or use the same keyboard shortcuts as in the popup.
 - Under **Opening apps**, choose **New tab** (the default) or **Smart** (use the current tab when it's a new or blank tab, otherwise a new tab).
 - Under **Appearance**, choose a theme: **Automatic** (match Firefox), **Light** or **Dark**. The popup and options page switch right away.
-- Also under **Appearance**, choose the grid size: **3×3** (the default) or **4×4**. If you haven't changed your apps, 4×4 adds YouTube, Google Translate, Google Slides, Google Messages, Duck.ai, Google Meet and DuckDuckGo; otherwise your apps stay as they are, with room for 7 more. Switching back to 3×3 removes apps 10 to 16; an **Undo** button brings them back.
+- Also under **Appearance**, choose the grid size: **3×3** (the default) or **4×4**. If you haven't changed your apps, 4×4 adds YouTube, Google Translate, Google Slides, Google Messages, Duck.ai, Google Meet and DuckDuckGo; otherwise your apps stay as they are, with room for 7 more. Switching back to 3×3 removes apps 10 to 16; an **Undo** button (or picking 4×4 again right away) brings them back.
 - Also under **Appearance**, choose the **Toolbar button** icon: **Grid** (the default, matching your Firefox theme) or **Waffle** (the butter waffle logo). The button changes right away.
 - **Restore defaults** brings back the original 9 apps, New tab, the Automatic theme, the 3×3 grid and the Grid toolbar button.
 

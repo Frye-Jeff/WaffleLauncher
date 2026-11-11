@@ -236,18 +236,27 @@ async function changeGridSize(size, ids) {
   }
 }
 
+// Restores the size and apps from before the last switch to a smaller grid.
+async function undoGridSize() {
+  if (!undoState) return;
+  if (await changeGridSize(undoState.size, undoState.apps)) hideRemoved();
+}
+
 for (const input of gridInputs) {
   input.addEventListener("change", async () => {
     if (!input.checked) return;
+    // Picking the larger size again while Undo is offered is the same as Undo,
+    // so the removed apps come back instead of empty spaces.
+    if (undoState && input.value === undoState.size) {
+      await undoGridSize();
+      return;
+    }
     const result = await changeGridSize(input.value);
     if (result) showRemoved(result.saved.removed, result.before);
   });
 }
 
-undo.addEventListener("click", async () => {
-  if (!undoState) return;
-  if (await changeGridSize(undoState.size, undoState.apps)) hideRemoved();
-});
+undo.addEventListener("click", undoGridSize);
 
 // Resets everything: the default apps, opening in a new tab, the Automatic
 // theme, the 3×3 grid and the grid toolbar icon.
