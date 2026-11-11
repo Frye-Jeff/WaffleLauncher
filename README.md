@@ -85,7 +85,7 @@ Lumo, Proton Account, Proton Calendar, Proton Docs, Proton Drive, Proton Mail, P
 
 ### Other
 
-Apple Maps, ChatGPT, Claude, Duck.ai.
+Apple Maps, ChatGPT, Claude, Duck.ai, DuckDuckGo.
 <!-- apps:end -->
 
 The default grid is Gmail, Calendar, Sheets, Drive, Gemini, Docs, Photos, Maps and Keep.

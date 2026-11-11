@@ -114,6 +114,7 @@ export const APPS = Object.freeze([
   { id: "other-chatgpt",         service: "other",  shortName: "ChatGPT",    name: "ChatGPT",         url: "https://chatgpt.com/",          icon: "icons/other/chatgpt.png" },
   { id: "other-claude",          service: "other",  shortName: "Claude",     name: "Claude",          url: "https://claude.ai/",            icon: "icons/other/claude.svg" },
   { id: "other-duckai",          service: "other",  shortName: "Duck.ai",    name: "Duck.ai",         url: "https://duck.ai/",              icon: "icons/other/duckai.svg" },
+  { id: "other-duckduckgo",      service: "other",  shortName: "DuckDuckGo", name: "DuckDuckGo",      url: "https://duckduckgo.com/",       icon: "icons/other/duckduckgo.svg" },
 ].map((app) => Object.freeze(app)));
 
 // The grid a new user starts with, in order. Listed explicitly so that adding
