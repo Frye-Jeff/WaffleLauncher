@@ -146,6 +146,25 @@ h4 {
   margin: 12px 0 0;
 }
 
+/* Toolbar button preview icons. The grid icon has a dark and a light version,
+   like the real toolbar; show the one that suits the page's colors. */
+.choice-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.choice-icon.on-dark {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .choice-icon.on-light { display: none; }
+  :root:not([data-theme="light"]) .choice-icon.on-dark { display: inline; }
+}
+
+:root[data-theme="dark"] .choice-icon.on-light { display: none; }
+:root[data-theme="dark"] .choice-icon.on-dark { display: inline; }
+
 /* "Removed ... from your grid. [Undo]" after switching to a smaller grid */
 .removed-note {
   display: flex;

@@ -10,16 +10,19 @@ import {
   gridCapacity,
   loadAppIds,
   loadGridSize,
+  loadIcon,
   loadOpenMode,
   loadTheme,
   moveItem,
   onAppIdsChanged,
   onGridSizeChanged,
+  onIconChanged,
   onOpenModeChanged,
   onThemeChanged,
   resetSettings,
   saveAppIds,
   saveGridSize,
+  saveIcon,
   saveOpenMode,
   saveTheme,
 } from "../settings.js";
@@ -213,6 +216,7 @@ function radioSetting(name, save, apply = () => {}) {
 
 const showOpenMode = radioSetting("open", saveOpenMode);
 const showTheme = radioSetting("theme", saveTheme, applyTheme);
+const showIcon = radioSetting("icon", saveIcon); // background.js updates the button
 
 // Saves a grid size (with `ids`, or the saved apps if omitted) and shows the
 // result. Returns what was saved, or undefined if it couldn't be saved.
@@ -246,7 +250,7 @@ undo.addEventListener("click", async () => {
 });
 
 // Resets everything: the default apps, opening in a new tab, the Automatic
-// theme and the 3×3 grid.
+// theme, the 3×3 grid and the grid toolbar icon.
 async function restoreDefaults() {
   try {
     const defaults = await resetSettings();
@@ -255,6 +259,7 @@ async function restoreDefaults() {
     render(defaults.apps);
     showOpenMode(defaults.open);
     showTheme(defaults.theme);
+    showIcon(defaults.icon);
     showStatus("Saved");
   } catch {
     showStatus("Couldn't save. Please try again.", true);
@@ -272,9 +277,10 @@ backgroundNote.textContent =
   `${IS_MAC ? "Cmd" : "Ctrl"}-click or middle-click an app to open it in a background tab ` +
   "and keep the popup open, whichever setting you choose.";
 restore.addEventListener("click", restoreDefaults);
-const [ids, savedOpenMode, savedTheme, savedGridSize] =
-  await Promise.all([loadAppIds(), loadOpenMode(), loadTheme(), loadGridSize()]);
+const [ids, savedOpenMode, savedTheme, savedGridSize, savedIcon] =
+  await Promise.all([loadAppIds(), loadOpenMode(), loadTheme(), loadGridSize(), loadIcon()]);
 showTheme(savedTheme);
+showIcon(savedIcon);
 showOpenMode(savedOpenMode);
 showGridSize(savedGridSize);
 render(ids);
@@ -284,3 +290,4 @@ onGridSizeChanged(showGridSize);
 onAppIdsChanged(render);
 onOpenModeChanged(showOpenMode);
 onThemeChanged(showTheme);
+onIconChanged(showIcon);

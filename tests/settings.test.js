@@ -5,9 +5,11 @@ import { installFakeBrowser } from "./fake-browser.js";
 import { APPS, DEFAULT_4X4_EXTRA_IDS, DEFAULT_APP_IDS, MAX_APPS } from "../src/apps.js";
 import {
   DEFAULT_GRID_SIZE,
+  DEFAULT_ICON,
   DEFAULT_OPEN_MODE,
   DEFAULT_THEME,
   GRID_SIZES,
+  ICONS,
   OPEN_MODES,
   SETTINGS_VERSION,
   THEMES,
@@ -17,16 +19,19 @@ import {
   gridColumns,
   loadAppIds,
   loadGridSize,
+  loadIcon,
   loadOpenMode,
   loadTheme,
   moveItem,
   onAppIdsChanged,
   onGridSizeChanged,
+  onIconChanged,
   onOpenModeChanged,
   onThemeChanged,
   resetSettings,
   saveAppIds,
   saveGridSize,
+  saveIcon,
   saveOpenMode,
   saveTheme,
 } from "../src/settings.js";
@@ -377,16 +382,59 @@ describe("4x4 default apps", () => {
   });
 });
 
+describe("loadIcon / saveIcon", () => {
+  test("defaults to the grid", async () => {
+    assert.deepEqual(ICONS, ["grid", "waffle"]);
+    assert.equal(DEFAULT_ICON, "grid");
+    assert.equal(await loadIcon(), "grid");
+  });
+
+  test("saves waffle, keeping the other settings", async () => {
+    fake.data.set(KEY, { version: 1, apps: ["google-drive"], theme: "dark" });
+    assert.equal(await saveIcon("waffle"), "waffle");
+    assert.deepEqual(fake.data.get(KEY),
+      { version: SETTINGS_VERSION, apps: ["google-drive"], theme: "dark", icon: "waffle" });
+    assert.equal(await loadIcon(), "waffle");
+  });
+
+  test("grid is stored by leaving the field out", async () => {
+    fake.data.set(KEY, { version: 1, icon: "waffle" });
+    await saveIcon("grid");
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION });
+  });
+
+  test("returns grid for an unknown value or a storage failure", async () => {
+    fake.data.set(KEY, { version: 1, icon: "pancake" });
+    assert.equal(await loadIcon(), "grid");
+    fake.failNext = "get";
+    assert.equal(await loadIcon(), "grid");
+  });
+
+  test("rejects an unknown icon without writing", async () => {
+    await assert.rejects(saveIcon("pancake"));
+    assert.equal(fake.data.has(KEY), false);
+  });
+
+  test("onIconChanged reports the icon", async () => {
+    const seen = [];
+    onIconChanged((icon) => seen.push(icon));
+    await saveIcon("waffle");
+    await resetSettings();
+    assert.deepEqual(seen, ["waffle", "grid"]);
+  });
+});
+
 describe("resetSettings", () => {
   test("removes all saved settings and returns every default", async () => {
     fake.data.set(KEY, { version: 1, apps: ["google-gmail"], theme: "dark", open: "smart", grid: "4x4" });
     assert.deepEqual(await resetSettings(),
-      { apps: [...DEFAULT_APP_IDS], theme: "auto", open: "new-tab", grid: "3x3" });
+      { apps: [...DEFAULT_APP_IDS], theme: "auto", open: "new-tab", grid: "3x3", icon: "grid" });
     assert.equal(fake.data.has(KEY), false);
     assert.deepEqual(await loadAppIds(), [...DEFAULT_APP_IDS]);
     assert.equal(await loadTheme(), "auto");
     assert.equal(await loadOpenMode(), "new-tab");
     assert.equal(await loadGridSize(), "3x3");
+    assert.equal(await loadIcon(), "grid");
   });
 
   test("rejects when storage fails", async () => {

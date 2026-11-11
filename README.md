@@ -4,7 +4,7 @@
 
 A privacy-first Firefox add-on that puts your favorite web apps (Google, Proton and more) one click away. Click the waffle button in the toolbar to get a grid of your apps, and click one to open it in a new tab.
 
-- **Toolbar waffle button** that matches light and dark Firefox themes
+- **Toolbar waffle button** that matches light and dark Firefox themes, or shows the butter waffle logo if you prefer
 - **3×3 or 4×4 grid** of the apps you choose (9 or 16 apps)
 - **Drag or use the keyboard to reorder**, right in the popup
 - **Settings** to pick which apps appear, one right-click away
@@ -41,7 +41,7 @@ WaffleLauncher collects no data. None.
   - `storage`, to remember your choices.
   - `activeTab`, used only by the optional **Smart** setting. When you click an app with Smart turned on, WaffleLauncher checks the address of the tab you're on, once, to see whether it's a new or blank tab. That address is never stored or sent anywhere. `activeTab` only covers the tab you're on, and only while you're using the popup; it never gives access to your other tabs or to any page's content.
   - `menus`, used only to add **WaffleLauncher settings** to the toolbar button's right-click menu. It gives no access to your tabs, pages or data.
-- **The only things stored are your chosen apps (in order), your theme choice, and whether Smart opening is on.** Defaults (Automatic theme, New tab) store nothing. If you use Firefox Sync, these sync between your devices like your other Firefox settings. Nothing about your browsing, clicks or usage is stored.
+- **The only things stored are your chosen apps (in order), your theme choice, whether Smart opening is on, your grid size and your toolbar icon choice.** Defaults (the default apps, Automatic theme, New tab, 3×3 grid, Grid icon) store nothing. If you use Firefox Sync, these sync between your devices like your other Firefox settings. Nothing about your browsing, clicks or usage is stored.
 - **No network requests.** Every icon and script is bundled with the add-on, and its pages run under a strict content security policy that blocks loading anything from the internet.
 - **No access to page content.** WaffleLauncher can't read or change any page you visit.
 - **Plain links.** Apps open at their normal addresses, with no tracking or referral codes added.
@@ -68,7 +68,8 @@ Get [WaffleLauncher on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox
 - Under **Opening apps**, choose **New tab** (the default) or **Smart** (use the current tab when it's a new or blank tab, otherwise a new tab).
 - Under **Appearance**, choose a theme: **Automatic** (match Firefox), **Light** or **Dark**. The popup and options page switch right away.
 - Also under **Appearance**, choose the grid size: **3×3** (the default) or **4×4**. If you haven't changed your apps, 4×4 adds YouTube, Google Translate, Google Slides, Google Messages, Duck.ai, Google Meet and DuckDuckGo; otherwise your apps stay as they are, with room for 7 more. Switching back to 3×3 removes apps 10 to 16; an **Undo** button brings them back.
-- **Restore defaults** brings back the original 9 apps, New tab, the Automatic theme and the 3×3 grid.
+- Also under **Appearance**, choose the **Toolbar button** icon: **Grid** (the default, matching your Firefox theme) or **Waffle** (the butter waffle logo). The button changes right away.
+- **Restore defaults** brings back the original 9 apps, New tab, the Automatic theme, the 3×3 grid and the Grid toolbar button.
 
 ## Supported apps
 
@@ -134,7 +135,7 @@ src/
 ├── settings.js      loads and saves your settings (the only code that uses storage)
 ├── theme.js         applies the light, dark or automatic theme to a page
 ├── open.js          rules for how a click opens an app (new, current or background tab)
-├── background.js    the right-click settings item, and opening settings after install
+├── background.js    the right-click settings item, opening settings after install, and the toolbar icon
 ├── grid/            tiles, drag and keyboard reordering, shared by the popup and options page
 ├── popup/           the toolbar popup
 ├── options/         the options page

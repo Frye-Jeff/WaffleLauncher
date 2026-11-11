@@ -2,11 +2,12 @@
 // Settings: the only code that reads or writes storage.
 //
 // The add-on stores exactly one setting object:
-//   storage.sync  "settings" = { version: 1, apps: [...], theme: "dark", open: "smart", grid: "4x4" }
+//   storage.sync  "settings" = { version: 1, apps: [...], theme: "dark", open: "smart", grid: "4x4", icon: "waffle" }
 //   - apps   the user's chosen apps, in grid order (absent = the defaults)
 //   - theme  "light" or "dark" (absent = "auto", follow Firefox)
 //   - open   "smart" (absent = "new-tab"): how a normal click opens an app
 //   - grid   "4x4" (absent = "3x3"): the grid size
+//   - icon   "waffle" (absent = "grid"): the toolbar button's icon
 // Nothing about browsing, clicks or usage is ever stored.
 //
 // Each save updates only its own field and keeps the rest, so saving one
@@ -24,6 +25,10 @@ export const DEFAULT_THEME = "auto";
 
 export const OPEN_MODES = Object.freeze(["new-tab", "smart"]);
 export const DEFAULT_OPEN_MODE = "new-tab";
+
+// Toolbar button icons: the plain grid from the manifest, or the waffle logo.
+export const ICONS = Object.freeze(["grid", "waffle"]);
+export const DEFAULT_ICON = "grid";
 
 // Grid sizes. The grid is square: "4x4" has 4 columns and holds 16 apps.
 export const GRID_SIZES = Object.freeze(["3x3", "4x4"]);
@@ -94,6 +99,11 @@ function themeFrom(stored) {
 // Turns a stored settings object into a valid open mode, defaulting to "new-tab".
 function openModeFrom(stored) {
   return OPEN_MODES.includes(stored?.open) ? stored.open : DEFAULT_OPEN_MODE;
+}
+
+// Turns a stored settings object into a valid toolbar icon, defaulting to "grid".
+function iconFrom(stored) {
+  return ICONS.includes(stored?.icon) ? stored.icon : DEFAULT_ICON;
 }
 
 // Reads the stored settings object for an update. Rejects if storage fails, so
@@ -188,6 +198,15 @@ export function saveOpenMode(mode) {
   return saveChoice("open", mode, OPEN_MODES, DEFAULT_OPEN_MODE);
 }
 
+// The toolbar button's icon: "grid" or "waffle".
+export function loadIcon() {
+  return loadChoice(iconFrom, DEFAULT_ICON);
+}
+
+export function saveIcon(icon) {
+  return saveChoice("icon", icon, ICONS, DEFAULT_ICON);
+}
+
 // The grid size: "3x3" or "4x4".
 export function loadGridSize() {
   return loadChoice(gridSizeFrom, DEFAULT_GRID_SIZE);
@@ -221,6 +240,7 @@ export async function resetSettings() {
     theme: DEFAULT_THEME,
     open: DEFAULT_OPEN_MODE,
     grid: DEFAULT_GRID_SIZE,
+    icon: DEFAULT_ICON,
   };
 }
 
@@ -255,6 +275,11 @@ export function onOpenModeChanged(callback) {
 // Calls `callback(size)` with the grid size when the settings change.
 export function onGridSizeChanged(callback) {
   return onSettingsChanged(gridSizeFrom, callback);
+}
+
+// Calls `callback(icon)` with the toolbar icon when the settings change.
+export function onIconChanged(callback) {
+  return onSettingsChanged(iconFrom, callback);
 }
 
 // Returns a copy of `list` with the item at index `from` moved to index `to`.
