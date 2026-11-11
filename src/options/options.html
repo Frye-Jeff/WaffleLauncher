@@ -37,16 +37,28 @@
 
     <section class="panel" aria-labelledby="appearance-heading">
       <h2 id="appearance-heading">Appearance</h2>
-      <p class="hint">Choose how WaffleLauncher looks. Automatic matches Firefox.</p>
-      <div class="choices" role="radiogroup" aria-labelledby="appearance-heading">
+      <p class="hint">Choose how WaffleLauncher looks.</p>
+      <h3 id="theme-heading">Theme</h3>
+      <p class="hint">Automatic matches Firefox.</p>
+      <div class="choices" role="radiogroup" aria-labelledby="theme-heading">
         <label class="choice"><input type="radio" name="theme" value="auto"> Automatic</label>
         <label class="choice"><input type="radio" name="theme" value="light"> Light</label>
         <label class="choice"><input type="radio" name="theme" value="dark"> Dark</label>
       </div>
+      <h3 id="grid-size-heading">Grid size</h3>
+      <p class="hint">How many apps the popup shows. Going to a smaller grid removes the apps that no longer fit.</p>
+      <div class="choices" role="radiogroup" aria-labelledby="grid-size-heading">
+        <label class="choice"><input type="radio" name="grid" value="3x3"> 3×3 (9 apps)</label>
+        <label class="choice"><input type="radio" name="grid" value="4x4"> 4×4 (16 apps)</label>
+      </div>
+      <div class="note removed-note" id="removed-note" role="status" aria-live="polite" hidden>
+        <span id="removed-text"></span>
+        <button type="button" id="undo">Undo</button>
+      </div>
     </section>
 
     <div class="actions">
-      <button type="button" id="restore" title="Restores the default apps, opening apps in a new tab, and the Automatic theme.">Restore defaults</button>
+      <button type="button" id="restore" title="Restores the default apps, opening apps in a new tab, the Automatic theme and the 3×3 grid.">Restore defaults</button>
       <p id="status" class="status" role="status" aria-live="polite"></p>
     </div>
   </main>

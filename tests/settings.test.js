@@ -2,23 +2,30 @@ import { beforeEach, describe, test } from "node:test";
 import assert from "node:assert/strict";
 
 import { installFakeBrowser } from "./fake-browser.js";
-import { APPS, DEFAULT_APP_IDS, GRID_SIZE } from "../src/apps.js";
+import { APPS, DEFAULT_APP_IDS, MAX_APPS } from "../src/apps.js";
 import {
+  DEFAULT_GRID_SIZE,
   DEFAULT_OPEN_MODE,
   DEFAULT_THEME,
+  GRID_SIZES,
   OPEN_MODES,
   SETTINGS_VERSION,
   THEMES,
   cleanAppIds,
+  gridCapacity,
+  gridColumns,
   loadAppIds,
+  loadGridSize,
   loadOpenMode,
   loadTheme,
   moveItem,
   onAppIdsChanged,
+  onGridSizeChanged,
   onOpenModeChanged,
   onThemeChanged,
   resetSettings,
   saveAppIds,
+  saveGridSize,
   saveOpenMode,
   saveTheme,
 } from "../src/settings.js";
@@ -41,8 +48,9 @@ describe("cleanAppIds", () => {
     assert.deepEqual(cleanAppIds(messy), ["google-drive", "google-gmail"]);
   });
 
-  test(`caps the list at GRID_SIZE (${GRID_SIZE})`, () => {
-    assert.deepEqual(cleanAppIds(ALL_IDS), ALL_IDS.slice(0, GRID_SIZE));
+  test(`caps the list at MAX_APPS (${MAX_APPS}), or at a given limit`, () => {
+    assert.deepEqual(cleanAppIds(ALL_IDS), ALL_IDS.slice(0, MAX_APPS));
+    assert.deepEqual(cleanAppIds(ALL_IDS, 9), ALL_IDS.slice(0, 9));
   });
 
   test("returns an empty list for anything that isn't an array", () => {
@@ -244,14 +252,92 @@ describe("loadOpenMode / saveOpenMode", () => {
   });
 });
 
+describe("grid size", () => {
+  const SIXTEEN = ALL_IDS.slice(0, 16);
+
+  test("3x3 holds 9 apps in 3 columns, 4x4 holds 16 in 4", () => {
+    assert.deepEqual(GRID_SIZES, ["3x3", "4x4"]);
+    assert.equal(DEFAULT_GRID_SIZE, "3x3");
+    assert.deepEqual([gridColumns("3x3"), gridCapacity("3x3")], [3, 9]);
+    assert.deepEqual([gridColumns("4x4"), gridCapacity("4x4")], [4, 16]);
+    assert.equal(gridCapacity(DEFAULT_GRID_SIZE), DEFAULT_APP_IDS.length);
+  });
+
+  test("defaults to 3x3, also for an unknown value or a storage failure", async () => {
+    assert.equal(await loadGridSize(), "3x3");
+    fake.data.set(KEY, { version: 1, grid: "5x5" });
+    assert.equal(await loadGridSize(), "3x3");
+    fake.failNext = "get";
+    assert.equal(await loadGridSize(), "3x3");
+  });
+
+  test("saves 4x4, keeping the other settings, and allows 16 apps", async () => {
+    fake.data.set(KEY, { version: 1, apps: ["google-drive"], theme: "dark" });
+    assert.deepEqual(await saveGridSize("4x4"), { size: "4x4", apps: ["google-drive"], removed: [] });
+    assert.deepEqual(fake.data.get(KEY),
+      { version: SETTINGS_VERSION, apps: ["google-drive"], theme: "dark", grid: "4x4" });
+    assert.deepEqual(await saveAppIds(ALL_IDS), SIXTEEN);
+    assert.deepEqual(await loadAppIds(), SIXTEEN);
+  });
+
+  test("a 3x3 grid still holds only 9 apps", async () => {
+    assert.deepEqual(await saveAppIds(ALL_IDS), ALL_IDS.slice(0, 9));
+  });
+
+  test("switching to 3x3 removes apps 10 to 16 in the same write and reports them", async () => {
+    fake.data.set(KEY, { version: 1, apps: SIXTEEN, grid: "4x4", open: "smart" });
+    const result = await saveGridSize("3x3");
+    assert.deepEqual(result, { size: "3x3", apps: SIXTEEN.slice(0, 9), removed: SIXTEEN.slice(9) });
+    // 3x3 is stored by leaving the field out
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION, apps: SIXTEEN.slice(0, 9), open: "smart" });
+  });
+
+  test("switching to 3x3 with 9 or fewer apps (or the defaults) removes nothing", async () => {
+    fake.data.set(KEY, { version: 1, grid: "4x4" });
+    assert.deepEqual(await saveGridSize("3x3"), { size: "3x3", apps: [...DEFAULT_APP_IDS], removed: [] });
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION });
+  });
+
+  test("undo: saving the old size with the old list restores both", async () => {
+    fake.data.set(KEY, { version: 1, apps: SIXTEEN, grid: "4x4" });
+    await saveGridSize("3x3");
+    assert.deepEqual(await saveGridSize("4x4", SIXTEEN), { size: "4x4", apps: SIXTEEN, removed: [] });
+    assert.deepEqual(await loadAppIds(), SIXTEEN);
+    assert.equal(await loadGridSize(), "4x4");
+  });
+
+  test("shows only what the grid holds if more apps are stored", async () => {
+    fake.data.set(KEY, { version: 1, apps: SIXTEEN });
+    assert.deepEqual(await loadAppIds(), SIXTEEN.slice(0, 9));
+  });
+
+  test("rejects an unknown size, or a storage failure, without writing", async () => {
+    fake.data.set(KEY, { version: 1, apps: SIXTEEN, grid: "4x4" });
+    await assert.rejects(saveGridSize("5x5"));
+    fake.failNext = "set";
+    await assert.rejects(saveGridSize("3x3"));
+    assert.deepEqual(fake.data.get(KEY), { version: 1, apps: SIXTEEN, grid: "4x4" });
+  });
+
+  test("onGridSizeChanged reports the size", async () => {
+    const seen = [];
+    onGridSizeChanged((size) => seen.push(size));
+    await saveGridSize("4x4");
+    await resetSettings();
+    assert.deepEqual(seen, ["4x4", "3x3"]);
+  });
+});
+
 describe("resetSettings", () => {
   test("removes all saved settings and returns every default", async () => {
-    fake.data.set(KEY, { version: 1, apps: ["google-gmail"], theme: "dark", open: "smart" });
-    assert.deepEqual(await resetSettings(), { apps: [...DEFAULT_APP_IDS], theme: "auto", open: "new-tab" });
+    fake.data.set(KEY, { version: 1, apps: ["google-gmail"], theme: "dark", open: "smart", grid: "4x4" });
+    assert.deepEqual(await resetSettings(),
+      { apps: [...DEFAULT_APP_IDS], theme: "auto", open: "new-tab", grid: "3x3" });
     assert.equal(fake.data.has(KEY), false);
     assert.deepEqual(await loadAppIds(), [...DEFAULT_APP_IDS]);
     assert.equal(await loadTheme(), "auto");
     assert.equal(await loadOpenMode(), "new-tab");
+    assert.equal(await loadGridSize(), "3x3");
   });
 
   test("rejects when storage fails", async () => {

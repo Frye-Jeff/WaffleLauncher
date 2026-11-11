@@ -2,18 +2,19 @@
 // Settings: the only code that reads or writes storage.
 //
 // The add-on stores exactly one setting object:
-//   storage.sync  "settings" = { version: 1, apps: [...], theme: "dark", open: "smart" }
+//   storage.sync  "settings" = { version: 1, apps: [...], theme: "dark", open: "smart", grid: "4x4" }
 //   - apps   the user's chosen apps, in grid order (absent = the defaults)
 //   - theme  "light" or "dark" (absent = "auto", follow Firefox)
 //   - open   "smart" (absent = "new-tab"): how a normal click opens an app
+//   - grid   "4x4" (absent = "3x3"): the grid size
 // Nothing about browsing, clicks or usage is ever stored.
 //
 // Each save updates only its own field and keeps the rest, so saving one
 // setting never loses another. Every app list going in or out is cleaned the
-// same way (known IDs only, no duplicates, at most GRID_SIZE), so the popup and
-// options page always agree.
+// same way (known IDs only, no duplicates, no more than the grid holds), so
+// the popup and options page always agree.
 // -----------------------------------------------------------------------------
-import { APPS, DEFAULT_APP_IDS, GRID_SIZE } from "./apps.js";
+import { APPS, DEFAULT_APP_IDS, MAX_APPS } from "./apps.js";
 
 const STORAGE_KEY = "settings";
 export const SETTINGS_VERSION = 1;
@@ -24,15 +25,28 @@ export const DEFAULT_THEME = "auto";
 export const OPEN_MODES = Object.freeze(["new-tab", "smart"]);
 export const DEFAULT_OPEN_MODE = "new-tab";
 
+// Grid sizes. The grid is square: "4x4" has 4 columns and holds 16 apps.
+export const GRID_SIZES = Object.freeze(["3x3", "4x4"]);
+export const DEFAULT_GRID_SIZE = "3x3";
+
+export function gridColumns(size) {
+  return size === "4x4" ? 4 : 3;
+}
+
+export function gridCapacity(size) {
+  return gridColumns(size) ** 2;
+}
+
 const KNOWN_IDS = new Set(APPS.map((app) => app.id));
 
 // Returns a valid app list: known IDs only, first occurrence wins, capped at
-// GRID_SIZE. Anything that isn't an array becomes an empty list.
-export function cleanAppIds(ids) {
+// `max` (the largest grid by default). Anything that isn't an array becomes an
+// empty list.
+export function cleanAppIds(ids, max = MAX_APPS) {
   const clean = [];
   if (!Array.isArray(ids)) return clean;
   for (const id of ids) {
-    if (clean.length === GRID_SIZE) break;
+    if (clean.length === max) break;
     if (typeof id === "string" && KNOWN_IDS.has(id) && !clean.includes(id)) {
       clean.push(id);
     }
@@ -43,10 +57,16 @@ export function cleanAppIds(ids) {
 // Turns a stored settings object into the list to show. Falls back to the
 // defaults when nothing usable is stored. Unknown IDs (for example, apps added
 // by a newer WaffleLauncher on another synced device) are skipped here but left
-// untouched in storage until the user saves a change on this device.
+// untouched in storage until the user saves a change on this device. Only as
+// many apps as the stored grid size holds are shown.
 function appIdsFrom(stored) {
-  const ids = cleanAppIds(stored?.apps);
+  const ids = cleanAppIds(stored?.apps, gridCapacity(gridSizeFrom(stored)));
   return ids.length ? ids : [...DEFAULT_APP_IDS];
+}
+
+// Turns a stored settings object into a valid grid size, defaulting to "3x3".
+function gridSizeFrom(stored) {
+  return GRID_SIZES.includes(stored?.grid) ? stored.grid : DEFAULT_GRID_SIZE;
 }
 
 // Turns a stored settings object into a valid theme, defaulting to "auto".
@@ -85,16 +105,23 @@ export async function loadAppIds() {
   }
 }
 
-// Saves the user's apps (keeping the theme) and returns the list that was
-// actually saved. An empty list restores the default apps. Rejects if storage
-// fails, so the caller can tell the user the change wasn't saved.
-export async function saveAppIds(ids) {
-  const clean = cleanAppIds(ids);
-  const settings = await readForUpdate();
+// Puts a cleaned app list into `settings`, capped at what its grid size
+// holds, and returns the list to show. An empty list means the defaults.
+function setAppIds(settings, ids) {
+  const clean = cleanAppIds(ids, gridCapacity(gridSizeFrom(settings)));
   if (clean.length) settings.apps = clean;
   else delete settings.apps;
-  await write(settings);
   return clean.length ? clean : [...DEFAULT_APP_IDS];
+}
+
+// Saves the user's apps (keeping the other settings) and returns the list that
+// was actually saved. An empty list restores the default apps. Rejects if
+// storage fails, so the caller can tell the user the change wasn't saved.
+export async function saveAppIds(ids) {
+  const settings = await readForUpdate();
+  const saved = setAppIds(settings, ids);
+  await write(settings);
+  return saved;
 }
 
 // Loads one choice-type setting. Never throws: on any storage problem it
@@ -138,11 +165,38 @@ export function saveOpenMode(mode) {
   return saveChoice("open", mode, OPEN_MODES, DEFAULT_OPEN_MODE);
 }
 
+// The grid size: "3x3" or "4x4".
+export function loadGridSize() {
+  return loadChoice(gridSizeFrom, DEFAULT_GRID_SIZE);
+}
+
+// Saves the grid size and, in the same write, the app list to go with it, so
+// the two can never disagree. `ids` defaults to the saved apps; apps past what
+// the new size holds are removed. Returns { size, apps, removed }: the apps to
+// show, and the IDs that were removed (so the caller can offer Undo by saving
+// the old size and list again). Rejects on an unknown size or a storage
+// failure, without writing.
+export async function saveGridSize(size, ids) {
+  if (!GRID_SIZES.includes(size)) throw new Error(`Unknown grid: ${size}`);
+  const settings = await readForUpdate();
+  const before = cleanAppIds(ids ?? settings.apps);
+  if (size === DEFAULT_GRID_SIZE) delete settings.grid;
+  else settings.grid = size;
+  const apps = setAppIds(settings, before);
+  await write(settings);
+  return { size, apps, removed: before.filter((id) => !apps.includes(id)) };
+}
+
 // Removes all saved settings, so every default applies again. Returns the
 // defaults. Rejects if storage fails.
 export async function resetSettings() {
   await browser.storage.sync.remove(STORAGE_KEY);
-  return { apps: [...DEFAULT_APP_IDS], theme: DEFAULT_THEME, open: DEFAULT_OPEN_MODE };
+  return {
+    apps: [...DEFAULT_APP_IDS],
+    theme: DEFAULT_THEME,
+    open: DEFAULT_OPEN_MODE,
+    grid: DEFAULT_GRID_SIZE,
+  };
 }
 
 // Calls `callback(value)` whenever the settings change, whether from this
@@ -171,6 +225,11 @@ export function onThemeChanged(callback) {
 // Calls `callback(mode)` with the open mode when the settings change.
 export function onOpenModeChanged(callback) {
   return onSettingsChanged(openModeFrom, callback);
+}
+
+// Calls `callback(size)` with the grid size when the settings change.
+export function onGridSizeChanged(callback) {
+  return onSettingsChanged(gridSizeFrom, callback);
 }
 
 // Returns a copy of `list` with the item at index `from` moved to index `to`.

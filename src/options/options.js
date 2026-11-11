@@ -1,20 +1,25 @@
 // -----------------------------------------------------------------------------
 // Options page: choose which apps appear (checkboxes grouped by service), their
-// order (drag in the grid preview), how apps open, and the theme. Every change
-// saves immediately.
+// order (drag in the grid preview), how apps open, the theme and the grid size.
+// Every change saves immediately.
 // -----------------------------------------------------------------------------
-import { APPS, GRID_SIZE } from "../apps.js";
+import { APPS } from "../apps.js";
 import { catalog } from "../catalog.js";
 import {
+  DEFAULT_GRID_SIZE,
+  gridCapacity,
   loadAppIds,
+  loadGridSize,
   loadOpenMode,
   loadTheme,
   moveItem,
   onAppIdsChanged,
+  onGridSizeChanged,
   onOpenModeChanged,
   onThemeChanged,
   resetSettings,
   saveAppIds,
+  saveGridSize,
   saveOpenMode,
   saveTheme,
 } from "../settings.js";
@@ -40,9 +45,16 @@ const services = document.getElementById("services");
 const restore = document.getElementById("restore");
 const status = document.getElementById("status");
 const backgroundNote = document.getElementById("background-note");
+const removedNote = document.getElementById("removed-note");
+const removedText = document.getElementById("removed-text");
+const undo = document.getElementById("undo");
+const gridInputs = [...document.querySelectorAll('input[name="grid"]')];
 
 const checkboxes = new Map(); // app id -> <input type="checkbox">
 let appIds = [];
+let gridSize = DEFAULT_GRID_SIZE;
+let capacity = gridCapacity(gridSize);
+let undoState; // { size, apps } to restore with Undo
 let statusTimer;
 
 // --- Drawing ----------------------------------------------------------------
@@ -101,9 +113,9 @@ function render(ids) {
     ...appIds.map((id, index) => createTile(APP_BY_ID.get(id), index, { count: appIds.length }))
   );
   syncGrid(grid);
-  count.textContent = `${appIds.length} of ${GRID_SIZE} apps.`;
+  count.textContent = `${appIds.length} of ${capacity} apps.`;
 
-  const full = appIds.length >= GRID_SIZE;
+  const full = appIds.length >= capacity;
   const onlyOne = appIds.length === 1;
   fullNote.hidden = !full;
   for (const [id, input] of checkboxes) {
@@ -123,8 +135,38 @@ function showStatus(message, isError = false) {
   if (!isError) statusTimer = setTimeout(() => { status.textContent = ""; }, STATUS_MS);
 }
 
+// Shows a grid size without saving it: the radio buttons, the preview's
+// columns and the app limit. Call render() afterwards to update the count.
+function showGridSize(size) {
+  gridSize = size;
+  capacity = gridCapacity(size);
+  grid.dataset.size = size;
+  for (const input of gridInputs) input.checked = input.value === size;
+  limitHint.textContent = `Pick up to ${capacity} apps. New apps are added to the end of your grid.`;
+}
+
+// After a switch to a smaller grid: names the removed apps and offers Undo,
+// which saves `before` ({ size, apps }) again.
+function showRemoved(removed, before) {
+  if (!removed.length) {
+    hideRemoved();
+    return;
+  }
+  const names = removed.map((id) => APP_BY_ID.get(id).name);
+  const list = new Intl.ListFormat("en", { type: "conjunction" }).format(names);
+  removedText.textContent = `Removed ${list} from your grid.`;
+  undoState = before;
+  removedNote.hidden = false;
+}
+
+function hideRemoved() {
+  undoState = undefined;
+  removedNote.hidden = true;
+}
+
 // --- Changes (each saves immediately) -----------------------------------------
 async function commit(next) {
+  hideRemoved(); // Undo would bring back the old list, losing this change
   const previous = appIds;
   render(next);
   try {
@@ -172,11 +214,44 @@ function radioSetting(name, save, apply = () => {}) {
 const showOpenMode = radioSetting("open", saveOpenMode);
 const showTheme = radioSetting("theme", saveTheme, applyTheme);
 
-// Resets everything: the default apps, opening in a new tab, and the
-// Automatic theme.
+// Saves a grid size (with `ids`, or the saved apps if omitted) and shows the
+// result. Returns what was saved, or undefined if it couldn't be saved.
+async function changeGridSize(size, ids) {
+  const before = { size: gridSize, apps: appIds };
+  try {
+    const saved = await saveGridSize(size, ids);
+    showGridSize(saved.size);
+    render(saved.apps);
+    showStatus("Saved");
+    return { saved, before };
+  } catch {
+    showGridSize(before.size); // not saved: show what's actually stored
+    render(before.apps);
+    showStatus("Couldn't save. Please try again.", true);
+    return undefined;
+  }
+}
+
+for (const input of gridInputs) {
+  input.addEventListener("change", async () => {
+    if (!input.checked) return;
+    const result = await changeGridSize(input.value);
+    if (result) showRemoved(result.saved.removed, result.before);
+  });
+}
+
+undo.addEventListener("click", async () => {
+  if (!undoState) return;
+  if (await changeGridSize(undoState.size, undoState.apps)) hideRemoved();
+});
+
+// Resets everything: the default apps, opening in a new tab, the Automatic
+// theme and the 3×3 grid.
 async function restoreDefaults() {
   try {
     const defaults = await resetSettings();
+    hideRemoved();
+    showGridSize(defaults.grid);
     render(defaults.apps);
     showOpenMode(defaults.open);
     showTheme(defaults.theme);
@@ -187,7 +262,6 @@ async function restoreDefaults() {
 }
 
 // --- Start ------------------------------------------------------------------
-limitHint.textContent = `Pick up to ${GRID_SIZE} apps. New apps are added to the end of your grid.`;
 buildPicker();
 const reorder = (from, to) => commit(moveItem(appIds, from, to));
 enableDragReorder(grid, reorder);
@@ -198,11 +272,15 @@ backgroundNote.textContent =
   `${IS_MAC ? "Cmd" : "Ctrl"}-click or middle-click an app to open it in a background tab ` +
   "and keep the popup open, whichever setting you choose.";
 restore.addEventListener("click", restoreDefaults);
-const [ids, savedOpenMode, savedTheme] =
-  await Promise.all([loadAppIds(), loadOpenMode(), loadTheme()]);
+const [ids, savedOpenMode, savedTheme, savedGridSize] =
+  await Promise.all([loadAppIds(), loadOpenMode(), loadTheme(), loadGridSize()]);
 showTheme(savedTheme);
 showOpenMode(savedOpenMode);
+showGridSize(savedGridSize);
 render(ids);
+// A grid size change also changes the app list, so the size is shown first
+// and the list (which follows in the same event) redraws the count.
+onGridSizeChanged(showGridSize);
 onAppIdsChanged(render);
 onOpenModeChanged(showOpenMode);
 onThemeChanged(showTheme);

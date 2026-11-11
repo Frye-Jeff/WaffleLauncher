@@ -5,10 +5,12 @@
 import { APPS } from "../apps.js";
 import {
   loadAppIds,
+  loadGridSize,
   loadOpenMode,
   loadTheme,
   moveItem,
   onAppIdsChanged,
+  onGridSizeChanged,
   onOpenModeChanged,
   onThemeChanged,
   saveAppIds,
@@ -80,12 +82,20 @@ async function reorder(from, to) {
   }
 }
 
+// The grid's column count comes from its size (see grid.css).
+function applyGridSize(size) {
+  grid.dataset.size = size;
+}
+
 enableDragReorder(grid, reorder);
 enableKeyboardReorder(grid, reorder);
-const [ids, theme, mode] = await Promise.all([loadAppIds(), loadTheme(), loadOpenMode()]);
+const [ids, theme, mode, size] =
+  await Promise.all([loadAppIds(), loadTheme(), loadOpenMode(), loadGridSize()]);
 applyTheme(theme); // before drawing, so the grid appears in the right theme
+applyGridSize(size);
 openMode = mode;
 render(ids);
 onAppIdsChanged(render);
 onThemeChanged(applyTheme);
 onOpenModeChanged((next) => { openMode = next; });
+onGridSizeChanged(applyGridSize);

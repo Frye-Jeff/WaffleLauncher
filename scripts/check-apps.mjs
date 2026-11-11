@@ -9,9 +9,13 @@ import { dirname, extname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const SRC = join(dirname(fileURLToPath(import.meta.url)), "..", "src");
-const { APPS, SERVICES, DEFAULT_APP_IDS, GRID_SIZE } = await import(
+const { APPS, SERVICES, DEFAULT_APP_IDS } = await import(
   pathToFileURL(join(SRC, "apps.js")).href
 );
+const { DEFAULT_GRID_SIZE, gridCapacity } = await import(
+  pathToFileURL(join(SRC, "settings.js")).href
+);
+const DEFAULT_CAPACITY = gridCapacity(DEFAULT_GRID_SIZE);
 
 const release = process.argv.includes("--release");
 const errors = [];
@@ -132,8 +136,8 @@ for (const [index, app] of APPS.entries()) {
 }
 
 // --- Defaults ---------------------------------------------------------------
-if (DEFAULT_APP_IDS.length !== GRID_SIZE) {
-  errors.push(`DEFAULT_APP_IDS has ${DEFAULT_APP_IDS.length} apps; it must have exactly ${GRID_SIZE}`);
+if (DEFAULT_APP_IDS.length !== DEFAULT_CAPACITY) {
+  errors.push(`DEFAULT_APP_IDS has ${DEFAULT_APP_IDS.length} apps; it must fill the default ${DEFAULT_GRID_SIZE} grid (${DEFAULT_CAPACITY})`);
 }
 const seenDefaults = new Set();
 for (const id of DEFAULT_APP_IDS) {

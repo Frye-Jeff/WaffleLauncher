@@ -2,10 +2,10 @@
 
 # WaffleLauncher
 
-A privacy-first Firefox add-on that puts your favorite web apps (Google, Proton and more) one click away. Click the waffle button in the toolbar to get a 3×3 grid of your apps, and click one to open it in a new tab.
+A privacy-first Firefox add-on that puts your favorite web apps (Google, Proton and more) one click away. Click the waffle button in the toolbar to get a grid of your apps, and click one to open it in a new tab.
 
 - **Toolbar waffle button** that matches light and dark Firefox themes
-- **3×3 grid** of the apps you choose
+- **3×3 or 4×4 grid** of the apps you choose (9 or 16 apps)
 - **Drag or use the keyboard to reorder**, right in the popup
 - **Settings** to pick which apps appear, one right-click away
 - **Light, dark or automatic** look, matching Firefox by default
@@ -63,11 +63,12 @@ Get [WaffleLauncher on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox
 **Settings.** Right-click the waffle button and choose **WaffleLauncher settings**, or open `about:addons`, click WaffleLauncher, then the **Preferences** tab. The settings page also opens once, right after you first install WaffleLauncher.
 
 - Check an app to add it to the end of your grid; uncheck it to remove it. Changes save right away.
-- Your grid holds up to 9 apps. When it's full, uncheck one to make room for another. The last app can't be removed, so the grid is never empty.
+- Your grid holds up to 9 apps, or 16 with the 4×4 grid size. When it's full, uncheck one to make room for another. The last app can't be removed, so the grid is never empty.
 - Drag apps in the **Your grid** preview to reorder them, or use the same keyboard shortcuts as in the popup.
 - Under **Opening apps**, choose **New tab** (the default) or **Smart** (use the current tab when it's a new or blank tab, otherwise a new tab).
-- Under **Appearance**, choose **Automatic** (match Firefox), **Light** or **Dark**. The popup and options page switch right away.
-- **Restore defaults** brings back the original 9 apps, New tab and the Automatic theme.
+- Under **Appearance**, choose a theme: **Automatic** (match Firefox), **Light** or **Dark**. The popup and options page switch right away.
+- Also under **Appearance**, choose the grid size: **3×3** (the default) or **4×4**. Switching back to 3×3 removes apps 10 to 16; an **Undo** button brings them back.
+- **Restore defaults** brings back the original 9 apps, New tab, the Automatic theme and the 3×3 grid.
 
 ## Supported apps
 

@@ -146,6 +146,15 @@ h4 {
   margin: 12px 0 0;
 }
 
+/* "Removed ... from your grid. [Undo]" after switching to a smaller grid */
+.removed-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 12px 0 0;
+}
+
 /* Actions and status */
 .actions {
   display: flex;

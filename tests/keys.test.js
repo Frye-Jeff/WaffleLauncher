@@ -9,6 +9,25 @@ const key = (name, mods = {}) => ({
 const focus = (to) => ({ type: "focus", to });
 const move = (to) => ({ type: "move", to });
 
+// A 4×4 grid with 14 apps:  0 1 2 3 / 4 5 6 7 / 8 9 10 11 / 12 13
+describe("gridKeyAction in a 4-column grid", () => {
+  test("arrows move by one tile or one row of 4", () => {
+    assert.deepEqual(gridKeyAction(key("ArrowRight"), 5, 14, 4), focus(6));
+    assert.deepEqual(gridKeyAction(key("ArrowDown"), 5, 14, 4), focus(9));
+    assert.deepEqual(gridKeyAction(key("ArrowUp"), 5, 14, 4), focus(1));
+    assert.deepEqual(gridKeyAction(key("End"), 0, 14, 4), focus(13));
+  });
+
+  test("down from the row above a short last row lands on its last tile", () => {
+    assert.deepEqual(gridKeyAction(key("ArrowDown"), 11, 14, 4), focus(13));
+  });
+
+  test("Ctrl + arrows move a tile by one row of 4", () => {
+    assert.deepEqual(gridKeyAction(key("ArrowDown", { ctrlKey: true }), 2, 14, 4), move(6));
+    assert.deepEqual(gridKeyAction(key("ArrowUp", { ctrlKey: true }), 13, 14, 4), move(9));
+  });
+});
+
 // A full 3×3 grid:   0 1 2 / 3 4 5 / 6 7 8
 describe("gridKeyAction: moving focus", () => {
   test("arrows move one tile or one row", () => {

@@ -17,8 +17,9 @@
 //   icon       Path relative to src/: an .svg or .png bundled with the add-on.
 // -----------------------------------------------------------------------------
 
-// Maximum number of apps in the popup grid (3×3).
-export const GRID_SIZE = 9;
+// Most apps the largest grid (4×4) can hold. Grid sizes live in settings.js;
+// the default grid is 3×3, so DEFAULT_APP_IDS lists 9 apps.
+export const MAX_APPS = 16;
 
 // Services, in the order their sections appear on the options page. A service
 // may split its apps into groups; each app then names its group.
