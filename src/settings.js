@@ -14,7 +14,7 @@
 // same way (known IDs only, no duplicates, no more than the grid holds), so
 // the popup and options page always agree.
 // -----------------------------------------------------------------------------
-import { APPS, DEFAULT_APP_IDS, MAX_APPS } from "./apps.js";
+import { APPS, DEFAULT_4X4_EXTRA_IDS, DEFAULT_APP_IDS, MAX_APPS } from "./apps.js";
 
 const STORAGE_KEY = "settings";
 export const SETTINGS_VERSION = 1;
@@ -37,6 +37,16 @@ export function gridCapacity(size) {
   return gridColumns(size) ** 2;
 }
 
+// The apps a grid size starts with while the user hasn't changed their apps:
+// the 3×3 defaults, followed by the extras for 4×4. Returns a fresh copy.
+export function defaultAppIds(size = DEFAULT_GRID_SIZE) {
+  return size === "4x4"
+    ? [...DEFAULT_APP_IDS, ...DEFAULT_4X4_EXTRA_IDS]
+    : [...DEFAULT_APP_IDS];
+}
+
+const sameList = (a, b) => a.length === b.length && a.every((id, i) => id === b[i]);
+
 const KNOWN_IDS = new Set(APPS.map((app) => app.id));
 
 // Returns a valid app list: known IDs only, first occurrence wins, capped at
@@ -55,13 +65,20 @@ export function cleanAppIds(ids, max = MAX_APPS) {
 }
 
 // Turns a stored settings object into the list to show. Falls back to the
-// defaults when nothing usable is stored. Unknown IDs (for example, apps added
+// defaults for the grid size when nothing usable is stored. Unknown IDs (for example, apps added
 // by a newer WaffleLauncher on another synced device) are skipped here but left
 // untouched in storage until the user saves a change on this device. Only as
 // many apps as the stored grid size holds are shown.
 function appIdsFrom(stored) {
-  const ids = cleanAppIds(stored?.apps, gridCapacity(gridSizeFrom(stored)));
-  return ids.length ? ids : [...DEFAULT_APP_IDS];
+  const size = gridSizeFrom(stored);
+  const ids = cleanAppIds(stored?.apps, gridCapacity(size));
+  return ids.length ? ids : defaultAppIds(size);
+}
+
+// True while the user hasn't changed their apps (the defaults are stored by
+// leaving the list out).
+function usesDefaultApps(stored) {
+  return cleanAppIds(stored?.apps).length === 0;
 }
 
 // Turns a stored settings object into a valid grid size, defaulting to "3x3".
@@ -106,12 +123,18 @@ export async function loadAppIds() {
 }
 
 // Puts a cleaned app list into `settings`, capped at what its grid size
-// holds, and returns the list to show. An empty list means the defaults.
+// holds, and returns the list to show. An empty list, or exactly the defaults
+// for the grid size, is stored by leaving the list out.
 function setAppIds(settings, ids) {
-  const clean = cleanAppIds(ids, gridCapacity(gridSizeFrom(settings)));
-  if (clean.length) settings.apps = clean;
-  else delete settings.apps;
-  return clean.length ? clean : [...DEFAULT_APP_IDS];
+  const size = gridSizeFrom(settings);
+  const clean = cleanAppIds(ids, gridCapacity(size));
+  const defaults = defaultAppIds(size);
+  if (!clean.length || sameList(clean, defaults)) {
+    delete settings.apps;
+    return defaults;
+  }
+  settings.apps = clean;
+  return clean;
 }
 
 // Saves the user's apps (keeping the other settings) and returns the list that
@@ -171,18 +194,20 @@ export function loadGridSize() {
 }
 
 // Saves the grid size and, in the same write, the app list to go with it, so
-// the two can never disagree. `ids` defaults to the saved apps; apps past what
-// the new size holds are removed. Returns { size, apps, removed }: the apps to
-// show, and the IDs that were removed (so the caller can offer Undo by saving
-// the old size and list again). Rejects on an unknown size or a storage
-// failure, without writing.
+// the two can never disagree. `ids` defaults to the apps shown now; apps past
+// what the new size holds are removed. A user who hasn't changed their apps
+// keeps the defaults, which for 4×4 adds DEFAULT_4X4_EXTRA_IDS. Returns
+// { size, apps, removed }: the apps to show, and the IDs that were removed (so
+// the caller can offer Undo by saving the old size and list again). Rejects on
+// an unknown size or a storage failure, without writing.
 export async function saveGridSize(size, ids) {
   if (!GRID_SIZES.includes(size)) throw new Error(`Unknown grid: ${size}`);
   const settings = await readForUpdate();
-  const before = cleanAppIds(ids ?? settings.apps);
+  const keepDefaults = ids === undefined && usesDefaultApps(settings);
+  const before = ids === undefined ? appIdsFrom(settings) : cleanAppIds(ids);
   if (size === DEFAULT_GRID_SIZE) delete settings.grid;
   else settings.grid = size;
-  const apps = setAppIds(settings, before);
+  const apps = keepDefaults ? setAppIds(settings, []) : setAppIds(settings, before);
   await write(settings);
   return { size, apps, removed: before.filter((id) => !apps.includes(id)) };
 }

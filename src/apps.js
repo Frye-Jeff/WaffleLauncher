@@ -18,7 +18,8 @@
 // -----------------------------------------------------------------------------
 
 // Most apps the largest grid (4×4) can hold. Grid sizes live in settings.js;
-// the default grid is 3×3, so DEFAULT_APP_IDS lists 9 apps.
+// the default grid is 3×3, so DEFAULT_APP_IDS lists 9 apps, and
+// DEFAULT_4X4_EXTRA_IDS the 7 more that fill a 4×4 grid.
 export const MAX_APPS = 16;
 
 // Services, in the order their sections appear on the options page. A service
@@ -123,4 +124,11 @@ export const DEFAULT_APP_IDS = Object.freeze([
   "google-gmail",  "google-calendar", "google-sheets",
   "google-drive",  "google-gemini",   "google-docs",
   "google-photos", "google-maps",     "google-keep",
+]);
+
+// Added after DEFAULT_APP_IDS to fill a 4×4 grid, in order, but only while the
+// user hasn't changed their apps.
+export const DEFAULT_4X4_EXTRA_IDS = Object.freeze([
+  "google-youtube", "google-translate", "google-slides", "google-messages",
+  "other-duckai",   "google-meet",      "other-duckduckgo",
 ]);

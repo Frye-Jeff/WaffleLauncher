@@ -2,7 +2,7 @@ import { beforeEach, describe, test } from "node:test";
 import assert from "node:assert/strict";
 
 import { installFakeBrowser } from "./fake-browser.js";
-import { APPS, DEFAULT_APP_IDS, MAX_APPS } from "../src/apps.js";
+import { APPS, DEFAULT_4X4_EXTRA_IDS, DEFAULT_APP_IDS, MAX_APPS } from "../src/apps.js";
 import {
   DEFAULT_GRID_SIZE,
   DEFAULT_OPEN_MODE,
@@ -12,6 +12,7 @@ import {
   SETTINGS_VERSION,
   THEMES,
   cleanAppIds,
+  defaultAppIds,
   gridCapacity,
   gridColumns,
   loadAppIds,
@@ -253,7 +254,8 @@ describe("loadOpenMode / saveOpenMode", () => {
 });
 
 describe("grid size", () => {
-  const SIXTEEN = ALL_IDS.slice(0, 16);
+  // 16 apps that aren't the defaults (ALL_IDS starts with the 9 defaults)
+  const SIXTEEN = ALL_IDS.slice(9, 25);
 
   test("3x3 holds 9 apps in 3 columns, 4x4 holds 16 in 4", () => {
     assert.deepEqual(GRID_SIZES, ["3x3", "4x4"]);
@@ -276,12 +278,12 @@ describe("grid size", () => {
     assert.deepEqual(await saveGridSize("4x4"), { size: "4x4", apps: ["google-drive"], removed: [] });
     assert.deepEqual(fake.data.get(KEY),
       { version: SETTINGS_VERSION, apps: ["google-drive"], theme: "dark", grid: "4x4" });
-    assert.deepEqual(await saveAppIds(ALL_IDS), SIXTEEN);
+    assert.deepEqual(await saveAppIds(ALL_IDS.slice(9)), SIXTEEN);
     assert.deepEqual(await loadAppIds(), SIXTEEN);
   });
 
   test("a 3x3 grid still holds only 9 apps", async () => {
-    assert.deepEqual(await saveAppIds(ALL_IDS), ALL_IDS.slice(0, 9));
+    assert.deepEqual(await saveAppIds(SIXTEEN), SIXTEEN.slice(0, 9));
   });
 
   test("switching to 3x3 removes apps 10 to 16 in the same write and reports them", async () => {
@@ -292,10 +294,9 @@ describe("grid size", () => {
     assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION, apps: SIXTEEN.slice(0, 9), open: "smart" });
   });
 
-  test("switching to 3x3 with 9 or fewer apps (or the defaults) removes nothing", async () => {
-    fake.data.set(KEY, { version: 1, grid: "4x4" });
-    assert.deepEqual(await saveGridSize("3x3"), { size: "3x3", apps: [...DEFAULT_APP_IDS], removed: [] });
-    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION });
+  test("switching to 3x3 with 9 or fewer apps removes nothing", async () => {
+    fake.data.set(KEY, { version: 1, apps: ["google-drive"], grid: "4x4" });
+    assert.deepEqual(await saveGridSize("3x3"), { size: "3x3", apps: ["google-drive"], removed: [] });
   });
 
   test("undo: saving the old size with the old list restores both", async () => {
@@ -325,6 +326,54 @@ describe("grid size", () => {
     await saveGridSize("4x4");
     await resetSettings();
     assert.deepEqual(seen, ["4x4", "3x3"]);
+  });
+});
+
+describe("4x4 default apps", () => {
+  const DEFAULT_16 = [...DEFAULT_APP_IDS, ...DEFAULT_4X4_EXTRA_IDS];
+
+  test("are the 9 defaults plus YouTube, Translate, Slides, Messages, Duck.ai, Meet and DuckDuckGo", () => {
+    assert.deepEqual(defaultAppIds("3x3"), [...DEFAULT_APP_IDS]);
+    assert.deepEqual(defaultAppIds("4x4").slice(9), [
+      "google-youtube", "google-translate", "google-slides", "google-messages",
+      "other-duckai", "google-meet", "other-duckduckgo",
+    ]);
+    assert.equal(new Set(defaultAppIds("4x4")).size, 16);
+  });
+
+  test("an unchanged grid gets all 16 when switching to 4x4, still stored by omission", async () => {
+    fake.data.set(KEY, { version: 1, theme: "dark" });
+    assert.deepEqual(await saveGridSize("4x4"), { size: "4x4", apps: DEFAULT_16, removed: [] });
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION, theme: "dark", grid: "4x4" });
+    assert.deepEqual(await loadAppIds(), DEFAULT_16);
+  });
+
+  test("a customized grid keeps its apps and gets empty spaces", async () => {
+    fake.data.set(KEY, { version: 1, apps: ["google-keep", "google-gmail"] });
+    const result = await saveGridSize("4x4");
+    assert.deepEqual(result.apps, ["google-keep", "google-gmail"]);
+  });
+
+  test("picking exactly the defaults counts as unchanged", async () => {
+    await saveAppIds([...DEFAULT_APP_IDS]);
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION });
+    assert.deepEqual((await saveGridSize("4x4")).apps, DEFAULT_16);
+  });
+
+  test("changing any app makes the grid customized", async () => {
+    await saveGridSize("4x4");
+    const fifteen = DEFAULT_16.slice(0, 15);
+    assert.deepEqual(await saveAppIds(fifteen), fifteen);
+    assert.deepEqual(fake.data.get(KEY).apps, fifteen);
+  });
+
+  test("going back to 3x3 reports the 7 extras as removed, and Undo restores all 16", async () => {
+    await saveGridSize("4x4");
+    const result = await saveGridSize("3x3");
+    assert.deepEqual(result, { size: "3x3", apps: [...DEFAULT_APP_IDS], removed: [...DEFAULT_4X4_EXTRA_IDS] });
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION });
+    assert.deepEqual((await saveGridSize("4x4", DEFAULT_16)).apps, DEFAULT_16);
+    assert.deepEqual(fake.data.get(KEY), { version: SETTINGS_VERSION, grid: "4x4" });
   });
 });
 

@@ -9,7 +9,7 @@ import { dirname, extname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const SRC = join(dirname(fileURLToPath(import.meta.url)), "..", "src");
-const { APPS, SERVICES, DEFAULT_APP_IDS } = await import(
+const { APPS, SERVICES, DEFAULT_APP_IDS, DEFAULT_4X4_EXTRA_IDS } = await import(
   pathToFileURL(join(SRC, "apps.js")).href
 );
 const { DEFAULT_GRID_SIZE, gridCapacity } = await import(
@@ -140,10 +140,19 @@ if (DEFAULT_APP_IDS.length !== DEFAULT_CAPACITY) {
   errors.push(`DEFAULT_APP_IDS has ${DEFAULT_APP_IDS.length} apps; it must fill the default ${DEFAULT_GRID_SIZE} grid (${DEFAULT_CAPACITY})`);
 }
 const seenDefaults = new Set();
-for (const id of DEFAULT_APP_IDS) {
-  if (!ids.has(id)) errors.push(`DEFAULT_APP_IDS: "${id}" is not an app in APPS`);
-  if (seenDefaults.has(id)) errors.push(`DEFAULT_APP_IDS: "${id}" is listed twice`);
-  seenDefaults.add(id);
+for (const [listName, list] of [
+  ["DEFAULT_APP_IDS", DEFAULT_APP_IDS],
+  ["DEFAULT_4X4_EXTRA_IDS", DEFAULT_4X4_EXTRA_IDS],
+]) {
+  for (const id of list) {
+    if (!ids.has(id)) errors.push(`${listName}: "${id}" is not an app in APPS`);
+    if (seenDefaults.has(id)) errors.push(`${listName}: "${id}" is already a default`);
+    seenDefaults.add(id);
+  }
+}
+const capacity4x4 = gridCapacity("4x4");
+if (DEFAULT_APP_IDS.length + DEFAULT_4X4_EXTRA_IDS.length !== capacity4x4) {
+  errors.push(`DEFAULT_APP_IDS plus DEFAULT_4X4_EXTRA_IDS must fill the 4x4 grid (${capacity4x4})`);
 }
 
 // --- README supported-apps list ---------------------------------------------
